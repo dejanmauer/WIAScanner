@@ -1,4 +1,9 @@
-﻿Public Class Form1
+﻿''' <summary>
+''' SAMPLE BY DEJAN MAUER
+''' dejan.mauer@gmail.com
+''' </summary>
+
+Public Class Form1
 	Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
 		Dim scanner As New WIAScanner.Scan()
 		Dim device = scanner.SelectDevice()
