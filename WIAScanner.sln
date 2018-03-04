@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WIAScanner", "WIAScanner\WIAScanner.vbproj", "{CA305C28-C7E9-41A1-8827-824F4AE1CAE9}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WIAScannerTest", "WIAScannerTest\WIAScannerTest.vbproj", "{D2054A42-C106-459F-8F04-EF86310A7098}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA305C28-C7E9-41A1-8827-824F4AE1CAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA305C28-C7E9-41A1-8827-824F4AE1CAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA305C28-C7E9-41A1-8827-824F4AE1CAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA305C28-C7E9-41A1-8827-824F4AE1CAE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2054A42-C106-459F-8F04-EF86310A7098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2054A42-C106-459F-8F04-EF86310A7098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2054A42-C106-459F-8F04-EF86310A7098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2054A42-C106-459F-8F04-EF86310A7098}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {502FD08D-C1A1-42FF-BD0B-7FCFD175FBC7}
+	EndGlobalSection
+EndGlobal
