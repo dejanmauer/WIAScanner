@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nepravilni Glagoli – Kviz (6. razred)</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Web3Forms – no SMS needed, just confirm via email at web3forms.com -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -377,15 +377,12 @@
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════
-   ░░  CONFIGURATION  ░░
-   Nastavi Web3Forms Access Key:
-   1. Pojdi na https://web3forms.com
-   2. Vpiši Dejan.mauer@gmail.com in klikni "Create Access Key"
-   3. Preveri email in prilepi ključ spodaj
-═══════════════════════════════════════════════════════ */
-const WEB3FORMS_KEY   = "YOUR_ACCESS_KEY";   // ← zamenjaj
-const RECIPIENT_EMAIL = "Dejan.mauer@gmail.com";
+const EMAILJS_PUBLIC_KEY  = "L58qZH2T4whKiPIja";
+const EMAILJS_SERVICE_ID  = "service_3vi9ymm";
+const EMAILJS_TEMPLATE_ID = "template_3szu7rd";
+const RECIPIENT_EMAIL     = "Dejan.mauer@gmail.com";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
 /* ═══════════════════════════════════════════════════════
    ░░  VERB DATA  ░░  (60 nepravilnih glagolov, 6. razred)
@@ -738,13 +735,6 @@ async function sendResultsEmail() {
     const btn    = document.getElementById('email-btn');
     const status = document.getElementById('email-status');
 
-    if (WEB3FORMS_KEY === "YOUR_ACCESS_KEY") {
-        status.className     = 'error';
-        status.style.display = 'block';
-        status.textContent   = '⚠️ Web3Forms Access Key ni nastavljen. Pojdi na web3forms.com, vpiši email in dobi ključ.';
-        return;
-    }
-
     btn.disabled             = true;
     status.className         = 'sending';
     status.style.display     = 'block';
@@ -752,25 +742,20 @@ async function sendResultsEmail() {
 
     const total = quizVerbs.length;
     const pct   = Math.round((correctCount / total) * 100);
-    const date  = new Date().toLocaleString('sl-SI');
-
-    const body = new FormData();
-    body.append("access_key",  WEB3FORMS_KEY);
-    body.append("subject",     `Kviz – Nepravilni glagoli | ${playerName} | ${correctCount}/${total} (${pct}%)`);
-    body.append("from_name",   "Nepravilni Glagoli Kviz");
-    body.append("replyto",     RECIPIENT_EMAIL);
-    body.append("message",     buildResultsText());
 
     try {
-        const res  = await fetch("https://api.web3forms.com/submit", { method:"POST", body });
-        const json = await res.json();
-        if (!json.success) throw new Error(json.message || "Napaka");
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            player_name:  playerName,
+            score:        `${correctCount} / ${total} (${pct}%)`,
+            results_text: buildResultsText(),
+            date:         new Date().toLocaleString('sl-SI'),
+        });
         status.className  = 'sent';
         status.textContent = '✅ Email uspešno poslan na ' + RECIPIENT_EMAIL;
     } catch(err) {
         console.error(err);
         status.className  = 'error';
-        status.textContent = '❌ Napaka: ' + err.message;
+        status.textContent = '❌ Napaka: ' + (err.text || err.message || 'Neznana napaka');
         btn.disabled = false;
     }
 }
