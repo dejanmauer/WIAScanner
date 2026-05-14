@@ -19,23 +19,17 @@
             padding: 24px 16px 40px;
         }
 
-        /* ── Confetti canvas ── */
         #confetti-canvas {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 999;
-            display: none;
+            pointer-events: none; z-index: 999; display: none;
         }
 
-        /* ── Screens ── */
         .screen { display: none; width: 100%; max-width: 640px; }
         .screen.active { display: block; }
 
-        /* ── Card ── */
         .card {
-            background: #fff;
-            border-radius: 28px;
+            background: #fff; border-radius: 28px;
             padding: 40px 36px;
             box-shadow: 0 24px 64px rgba(0,0,0,.22);
             animation: slideUp .4s ease;
@@ -45,211 +39,130 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── Common headings ── */
         .emoji-big { font-size: 72px; text-align: center; margin-bottom: 8px; line-height: 1; }
-        h1 {
-            font-size: 2rem; font-weight: 900;
-            text-align: center; color: #3730a3; margin-bottom: 4px;
-        }
+        h1 { font-size: 2rem; font-weight: 900; text-align: center; color: #3730a3; margin-bottom: 4px; }
         .subtitle { text-align: center; color: #7c3aed; font-weight: 700; font-size: 1.05rem; margin-bottom: 28px; }
 
-        /* ── Form elements ── */
         .form-group { margin-bottom: 22px; }
         .form-group label { display: block; font-weight: 800; color: #374151; margin-bottom: 8px; font-size: 1rem; }
 
         input[type="text"] {
-            width: 100%;
-            border: 3px solid #e0e7ff;
-            border-radius: 14px;
-            padding: 14px 18px;
-            font-size: 1.1rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1f2937;
-            outline: none;
-            transition: border-color .2s, box-shadow .2s;
+            width: 100%; border: 3px solid #e0e7ff; border-radius: 14px;
+            padding: 14px 18px; font-size: 1.1rem;
+            font-family: 'Nunito', sans-serif; font-weight: 700; color: #1f2937;
+            outline: none; transition: border-color .2s, box-shadow .2s, background .2s;
         }
-        input[type="text"]:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 4px rgba(99,102,241,.15);
-        }
+        input[type="text"]:focus { border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99,102,241,.15); }
+        input.input-ok  { border-color: #10b981 !important; background: #f0fdf4; }
+        input.input-err { border-color: #ef4444 !important; background: #fff5f5; }
 
-        /* ── Count selector ── */
-        .count-grid {
-            display: flex; flex-wrap: wrap; gap: 10px;
-        }
+        .count-grid { display: flex; flex-wrap: wrap; gap: 10px; }
         .count-btn {
-            flex: 1; min-width: 64px;
-            padding: 12px 8px;
-            border: 3px solid #e0e7ff;
-            border-radius: 14px;
-            background: #fff;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem; font-weight: 800;
-            color: #6366f1;
-            cursor: pointer;
-            transition: all .2s;
+            flex: 1; min-width: 64px; padding: 12px 8px;
+            border: 3px solid #e0e7ff; border-radius: 14px;
+            background: #fff; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 800; color: #6366f1; cursor: pointer; transition: all .2s;
         }
         .count-btn:hover  { border-color: #6366f1; background: #eef2ff; }
         .count-btn.active { border-color: #6366f1; background: #6366f1; color: #fff; }
 
-        /* ── Buttons ── */
         .btn-primary {
-            display: block; width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: #fff;
-            border: none; border-radius: 16px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.2rem; font-weight: 900;
-            cursor: pointer;
+            display: block; width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+            border: none; border-radius: 16px; font-family: 'Nunito', sans-serif;
+            font-size: 1.2rem; font-weight: 900; cursor: pointer;
             transition: transform .15s, box-shadow .15s;
-            box-shadow: 0 6px 20px rgba(99,102,241,.35);
-            margin-top: 8px;
+            box-shadow: 0 6px 20px rgba(99,102,241,.35); margin-top: 8px;
         }
         .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(99,102,241,.45); }
         .btn-primary:active { transform: translateY(0); }
 
         .btn-secondary {
-            display: block; width: 100%;
-            padding: 14px;
-            background: #fff;
-            color: #6366f1;
-            border: 3px solid #6366f1;
-            border-radius: 16px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.1rem; font-weight: 800;
-            cursor: pointer;
-            transition: transform .15s, background .15s;
-            margin-top: 8px;
+            display: block; width: 100%; padding: 14px;
+            background: #fff; color: #6366f1; border: 3px solid #6366f1;
+            border-radius: 16px; font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            transition: transform .15s, background .15s; margin-top: 8px;
         }
-        .btn-secondary:hover  { background: #eef2ff; transform: translateY(-2px); }
+        .btn-secondary:hover { background: #eef2ff; transform: translateY(-2px); }
 
         /* ── Quiz header ── */
-        .quiz-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px;
-        }
+        .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         #question-counter { font-weight: 800; color: #6366f1; font-size: 1rem; }
         #score-display    { font-weight: 800; font-size: 1rem; }
-        .score-correct  { color: #10b981; }
-        .score-wrong    { color: #ef4444; }
+        .score-correct { color: #10b981; }
+        .score-wrong   { color: #ef4444; }
 
-        /* ── Progress bar ── */
-        .progress-bar-wrap {
-            height: 12px; background: #e0e7ff;
-            border-radius: 99px; margin-bottom: 30px; overflow: hidden;
-        }
+        .progress-bar-wrap { height: 12px; background: #e0e7ff; border-radius: 99px; margin-bottom: 30px; overflow: hidden; }
         #progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6);
-            border-radius: 99px;
-            transition: width .4s ease;
-            width: 0%;
+            height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 99px; transition: width .4s ease; width: 0%;
         }
 
-        /* ── Question area ── */
         .question-label {
-            font-size: .85rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: .08em;
-            color: #9ca3af; margin-bottom: 6px;
+            font-size: .85rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .08em; color: #9ca3af; margin-bottom: 6px;
         }
         #slovenian-word {
-            font-size: 2.4rem; font-weight: 900;
-            color: #1f2937; margin-bottom: 24px;
-            text-align: center;
-            background: linear-gradient(135deg, #eef2ff, #f3e8ff);
-            border-radius: 16px;
-            padding: 20px;
-            letter-spacing: .02em;
+            font-size: 2.4rem; font-weight: 900; color: #1f2937; margin-bottom: 24px;
+            text-align: center; background: linear-gradient(135deg, #eef2ff, #f3e8ff);
+            border-radius: 16px; padding: 20px; letter-spacing: .02em;
         }
-        .input-row {
-            display: flex; gap: 10px; align-items: stretch;
-        }
-        .input-row input[type="text"] { flex: 1; margin: 0; }
+
+        /* ── Two input fields ── */
+        .two-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .input-group .question-label { margin-bottom: 6px; }
+        .input-group input { margin: 0; }
+
         .btn-submit {
-            padding: 14px 22px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: #fff;
-            border: none; border-radius: 14px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1.1rem; font-weight: 900;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: transform .15s;
-            box-shadow: 0 4px 14px rgba(99,102,241,.35);
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+            border: none; border-radius: 14px; font-family: 'Nunito', sans-serif;
+            font-size: 1.15rem; font-weight: 900; cursor: pointer;
+            transition: transform .15s; box-shadow: 0 4px 14px rgba(99,102,241,.35);
         }
         .btn-submit:hover  { transform: translateY(-2px); }
         .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: .5; cursor: default; transform: none; }
 
         /* ── Feedback ── */
         #feedback {
-            margin-top: 20px;
-            border-radius: 16px;
-            padding: 18px 20px;
-            font-size: 1.05rem;
-            font-weight: 800;
-            text-align: center;
-            transition: all .3s;
+            margin-top: 20px; border-radius: 16px; padding: 18px 20px;
+            font-size: 1.05rem; font-weight: 800; text-align: center;
         }
         #feedback.hidden { display: none; }
-        #feedback.correct {
-            background: #d1fae5; color: #065f46;
-            border: 3px solid #6ee7b7;
-        }
-        #feedback.wrong {
-            background: #fee2e2; color: #991b1b;
-            border: 3px solid #fca5a5;
-        }
-        #feedback .correct-answer {
-            display: block;
-            font-size: 1.4rem; font-weight: 900;
-            color: #065f46; margin-top: 6px;
-        }
+        #feedback.correct { background: #d1fae5; color: #065f46; border: 3px solid #6ee7b7; }
+        #feedback.wrong   { background: #fee2e2; color: #991b1b; border: 3px solid #fca5a5; }
+        .feedback-lines { margin: 10px 0 14px; font-size: .98rem; line-height: 2; font-weight: 700; }
+        .feedback-lines strong { font-size: 1.1rem; }
         .btn-next {
-            margin-top: 14px;
-            padding: 12px 28px;
-            background: #6366f1; color: #fff;
-            border: none; border-radius: 12px;
-            font-family: 'Nunito', sans-serif;
-            font-size: 1rem; font-weight: 800;
-            cursor: pointer;
-            transition: transform .15s;
+            padding: 12px 28px; background: #6366f1; color: #fff;
+            border: none; border-radius: 12px; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 800; cursor: pointer; transition: transform .15s;
         }
         .btn-next:hover { transform: translateY(-2px); }
 
         /* ── Results ── */
         .results-card { padding: 36px 28px; }
-
-        .score-big {
-            font-size: 3rem; font-weight: 900;
-            text-align: center; margin: 12px 0;
-        }
+        .score-big { font-size: 3rem; font-weight: 900; text-align: center; margin: 12px 0; }
         .score-big .num { color: #6366f1; }
-
         .result-message {
-            text-align: center; font-size: 1.1rem; font-weight: 700;
-            color: #4b5563; margin-bottom: 24px;
-            background: #f9fafb; border-radius: 12px; padding: 12px;
+            text-align: center; font-size: 1.1rem; font-weight: 700; color: #4b5563;
+            margin-bottom: 24px; background: #f9fafb; border-radius: 12px; padding: 12px;
         }
 
-        .results-table-wrap {
-            overflow-x: auto; margin-bottom: 24px;
-            border-radius: 14px; border: 2px solid #e0e7ff;
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 440px; }
+        .results-table-wrap { overflow-x: auto; margin-bottom: 20px; border-radius: 14px; border: 2px solid #e0e7ff; }
+        table { width: 100%; border-collapse: collapse; min-width: 580px; }
         th {
-            background: #eef2ff; color: #3730a3;
-            font-weight: 900; font-size: .85rem;
-            text-transform: uppercase; letter-spacing: .06em;
-            padding: 10px 12px; text-align: left;
+            background: #eef2ff; color: #3730a3; font-weight: 900;
+            font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+            padding: 10px 10px; text-align: left;
         }
-        td { padding: 10px 12px; font-weight: 700; font-size: .95rem; border-top: 1px solid #e0e7ff; }
+        td { padding: 9px 10px; font-weight: 700; font-size: .9rem; border-top: 1px solid #e0e7ff; }
         tr.row-correct { background: #f0fdf4; }
         tr.row-wrong   { background: #fff5f5; }
         .badge {
-            display: inline-block;
-            padding: 3px 10px; border-radius: 99px;
+            display: inline-block; padding: 3px 9px; border-radius: 99px;
             font-size: .8rem; font-weight: 800;
         }
         .badge-ok  { background: #d1fae5; color: #065f46; }
@@ -257,23 +170,19 @@
 
         .results-buttons { display: flex; flex-direction: column; gap: 10px; }
 
-        /* ── Email status ── */
         #email-status {
-            text-align: center; font-weight: 700;
-            font-size: .95rem; padding: 10px;
-            border-radius: 10px; margin-top: 8px; display: none;
+            text-align: center; font-weight: 700; font-size: .95rem;
+            padding: 12px; border-radius: 10px; display: none;
         }
         #email-status.sending { background: #fef3c7; color: #92400e; }
         #email-status.sent    { background: #d1fae5; color: #065f46; }
         #email-status.error   { background: #fee2e2; color: #991b1b; }
 
-        /* ── Responsive ── */
         @media (max-width: 480px) {
             .card { padding: 28px 20px; }
             #slovenian-word { font-size: 1.8rem; }
             .score-big { font-size: 2.2rem; }
-            .input-row { flex-direction: column; }
-            .btn-submit { width: 100%; }
+            .two-inputs { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -329,14 +238,24 @@
         <p class="question-label">Slovensko</p>
         <div id="slovenian-word">–</div>
 
-        <p class="question-label">Past Simple</p>
-        <div class="input-row">
-            <input type="text" id="answer-input"
-                   placeholder="Vpiši Past Simple…"
-                   autocomplete="off" autocorrect="off"
-                   autocapitalize="off" spellcheck="false">
-            <button id="submit-btn" class="btn-submit">✓ Potrdi</button>
+        <div class="two-inputs">
+            <div class="input-group">
+                <p class="question-label">Glagol (verb)</p>
+                <input type="text" id="verb-input"
+                       placeholder="npr. go"
+                       autocomplete="off" autocorrect="off"
+                       autocapitalize="off" spellcheck="false">
+            </div>
+            <div class="input-group">
+                <p class="question-label">Past Simple</p>
+                <input type="text" id="past-input"
+                       placeholder="npr. went"
+                       autocomplete="off" autocorrect="off"
+                       autocapitalize="off" spellcheck="false">
+            </div>
         </div>
+
+        <button id="submit-btn" class="btn-submit">✓ Potrdi</button>
 
         <div id="feedback" class="hidden"></div>
     </div>
@@ -359,8 +278,10 @@
                     <tr>
                         <th>#</th>
                         <th>Slovensko</th>
-                        <th>Pravilno</th>
-                        <th>Tvoj odgovor</th>
+                        <th>Glagol ✓</th>
+                        <th>Past Simple ✓</th>
+                        <th>Tvoj glagol</th>
+                        <th>Tvoj Past</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -369,8 +290,8 @@
         </div>
 
         <div class="results-buttons">
-            <button id="email-btn" class="btn-secondary">📧 Pošlji rezultate po emailu</button>
             <div id="email-status"></div>
+            <button id="retry-email-btn" class="btn-secondary" style="display:none">📧 Pošlji email znova</button>
             <button id="replay-btn" class="btn-primary">🔄 Igraj ponovno</button>
         </div>
     </div>
@@ -453,15 +374,15 @@ const VERBS = [
 /* ═══════════════════════════════════════════════════════
    ░░  STATE  ░░
 ═══════════════════════════════════════════════════════ */
-let playerName   = "";
+let playerName    = "";
 let questionCount = 10;
-let quizVerbs    = [];
-let currentIndex = 0;
-let correctCount = 0;
-let wrongCount   = 0;
-let results      = [];   // {verb, past, sl, userAnswer, isCorrect}
-let awaitingNext = false;
-let audioCtx     = null;
+let quizVerbs     = [];
+let currentIndex  = 0;
+let correctCount  = 0;
+let wrongCount    = 0;
+let results       = []; // {verb, past, sl, userVerb, userPast, verbOk, pastOk, isCorrect}
+let awaitingNext  = false;
+let audioCtx      = null;
 
 /* ═══════════════════════════════════════════════════════
    ░░  AUDIO  ░░
@@ -470,66 +391,49 @@ function getAudioCtx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     return audioCtx;
 }
-
 function playTone(freq, type, duration, gain, delay = 0) {
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
     const vol = ctx.createGain();
-    osc.connect(vol);
-    vol.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.value = freq;
+    osc.connect(vol); vol.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
     vol.gain.setValueAtTime(gain, ctx.currentTime + delay);
     vol.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
     osc.start(ctx.currentTime + delay);
     osc.stop(ctx.currentTime + delay + duration);
 }
-
 function playSuccess() {
-    // Ascending major arpeggio: C5 E5 G5 C6
     [[523,.00],[659,.10],[784,.20],[1047,.32]].forEach(([f,d]) => playTone(f,'sine',.35,.28,d));
 }
-
 function playError() {
-    // Short descending buzz
     playTone(220,'sawtooth',.15,.2,0);
     playTone(160,'sawtooth',.25,.2,.12);
 }
 
 /* ═══════════════════════════════════════════════════════
-   ░░  CONFETTI  ░══════════════════════════════════════ */
+   ░░  CONFETTI  ░░
+═══════════════════════════════════════════════════════ */
 function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     canvas.style.display = 'block';
     const ctx2 = canvas.getContext('2d');
     const COLORS = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff6bcd','#ff9f43','#a29bfe','#fd79a8'];
     const pieces = Array.from({length:160}, () => ({
-        x:     Math.random() * canvas.width,
-        y:     -10 - Math.random() * 80,
-        w:     6  + Math.random() * 10,
-        h:     4  + Math.random() * 6,
+        x: Math.random()*canvas.width, y: -10 - Math.random()*80,
+        w: 6+Math.random()*10, h: 4+Math.random()*6,
         color: COLORS[Math.floor(Math.random()*COLORS.length)],
-        vy:    2.5 + Math.random() * 3,
-        vx:    (Math.random()-0.5) * 2.5,
-        rot:   Math.random() * 360,
-        spin:  (Math.random()-0.5) * 6,
+        vy: 2.5+Math.random()*3, vx: (Math.random()-.5)*2.5,
+        rot: Math.random()*360, spin: (Math.random()-.5)*6,
     }));
     let frame = 0;
     function draw() {
         ctx2.clearRect(0,0,canvas.width,canvas.height);
         pieces.forEach(p => {
-            p.y   += p.vy;
-            p.x   += p.vx;
-            p.rot += p.spin;
-            ctx2.save();
-            ctx2.translate(p.x, p.y);
-            ctx2.rotate(p.rot * Math.PI/180);
-            ctx2.fillStyle = p.color;
-            ctx2.globalAlpha = Math.max(0, 1 - frame/220);
-            ctx2.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-            ctx2.restore();
+            p.y+=p.vy; p.x+=p.vx; p.rot+=p.spin;
+            ctx2.save(); ctx2.translate(p.x,p.y); ctx2.rotate(p.rot*Math.PI/180);
+            ctx2.fillStyle=p.color; ctx2.globalAlpha=Math.max(0,1-frame/220);
+            ctx2.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx2.restore();
         });
         frame++;
         if (frame < 240) requestAnimationFrame(draw);
@@ -544,20 +448,19 @@ function launchConfetti() {
 function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length-1; i > 0; i--) {
-        const j = Math.floor(Math.random()*(i+1));
-        [a[i],a[j]] = [a[j],a[i]];
+        const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
     }
     return a;
 }
-
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
-
 function checkAnswer(input, correctList) {
-    const clean = input.trim().toLowerCase();
-    return correctList.some(c => c.toLowerCase() === clean);
+    return correctList.some(c => c.toLowerCase() === input.trim().toLowerCase());
+}
+function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -566,10 +469,7 @@ function checkAnswer(input, correctList) {
 function startQuiz() {
     playerName   = document.getElementById('player-name').value.trim() || "Učenec";
     quizVerbs    = shuffle(VERBS).slice(0, questionCount);
-    currentIndex = 0;
-    correctCount = 0;
-    wrongCount   = 0;
-    results      = [];
+    currentIndex = 0; correctCount = 0; wrongCount = 0; results = [];
     showScreen('screen-quiz');
     showQuestion();
 }
@@ -579,53 +479,61 @@ function showQuestion() {
     const v = quizVerbs[currentIndex];
     const total = quizVerbs.length;
 
-    document.getElementById('question-counter').textContent =
-        `${currentIndex+1} / ${total}`;
+    document.getElementById('question-counter').textContent = `${currentIndex+1} / ${total}`;
     document.getElementById('score-display').innerHTML =
         `<span class="score-correct">✓ ${correctCount}</span> &nbsp; <span class="score-wrong">✗ ${wrongCount}</span>`;
-    document.getElementById('progress-bar').style.width =
-        ((currentIndex / total) * 100) + '%';
+    document.getElementById('progress-bar').style.width = ((currentIndex/total)*100) + '%';
     document.getElementById('slovenian-word').textContent = v.sl;
 
-    const inp = document.getElementById('answer-input');
-    inp.value = '';
-    inp.disabled = false;
-    inp.focus();
+    const verbInp = document.getElementById('verb-input');
+    const pastInp = document.getElementById('past-input');
+    verbInp.value = ''; pastInp.value = '';
+    verbInp.disabled = false; pastInp.disabled = false;
+    verbInp.classList.remove('input-ok','input-err');
+    pastInp.classList.remove('input-ok','input-err');
+    verbInp.focus();
 
     const fb = document.getElementById('feedback');
-    fb.className = 'hidden';
-    fb.innerHTML = '';
-
+    fb.className = 'hidden'; fb.innerHTML = '';
     document.getElementById('submit-btn').disabled = false;
 }
 
 function submitAnswer() {
     if (awaitingNext) return;
-    const inp   = document.getElementById('answer-input');
-    const ans   = inp.value;
-    const v     = quizVerbs[currentIndex];
-    const ok    = checkAnswer(ans, v.past);
-    const fb    = document.getElementById('feedback');
+    const verbInp = document.getElementById('verb-input');
+    const pastInp = document.getElementById('past-input');
+    const userVerb = verbInp.value.trim();
+    const userPast = pastInp.value.trim();
+    const v = quizVerbs[currentIndex];
 
-    inp.disabled = true;
+    const verbOk = userVerb.toLowerCase() === v.verb.toLowerCase();
+    const pastOk = checkAnswer(userPast, v.past);
+    const ok = verbOk && pastOk;
+
+    verbInp.disabled = true; pastInp.disabled = true;
     document.getElementById('submit-btn').disabled = true;
+    verbInp.classList.add(verbOk ? 'input-ok' : 'input-err');
+    pastInp.classList.add(pastOk ? 'input-ok' : 'input-err');
 
-    results.push({ verb: v.verb, past: v.past, sl: v.sl, userAnswer: ans.trim(), isCorrect: ok });
+    results.push({ verb:v.verb, past:v.past, sl:v.sl, userVerb, userPast, verbOk, pastOk, isCorrect:ok });
 
+    const fb = document.getElementById('feedback');
     if (ok) {
         correctCount++;
         fb.className = 'correct';
-        fb.innerHTML = `<div>🎉 Bravo! Pravilno!</div><span class="correct-answer">${v.past[0]}</span>`;
-        playSuccess();
-        launchConfetti();
+        fb.innerHTML = `<div>🎉 Bravo! Vse pravilno!</div>`;
+        playSuccess(); launchConfetti();
         awaitingNext = true;
         setTimeout(nextQuestion, 1800);
     } else {
         wrongCount++;
+        let lines = [];
+        if (!verbOk) lines.push(`Glagol: <strong>${escHtml(v.verb)}</strong> &nbsp;(vpisal/-a si: <em>${escHtml(userVerb||'—')}</em>)`);
+        if (!pastOk) lines.push(`Past Simple: <strong>${escHtml(v.past.join(' / '))}</strong> &nbsp;(vpisal/-a si: <em>${escHtml(userPast||'—')}</em>)`);
         fb.className = 'wrong';
         fb.innerHTML = `<div>❌ Napaka! Pravilno je:</div>
-            <span class="correct-answer">${v.past.join(' / ')}</span>
-            <br><button class="btn-next" onclick="nextQuestion()">Naprej →</button>`;
+            <div class="feedback-lines">${lines.join('<br>')}</div>
+            <button class="btn-next" onclick="nextQuestion()">Naprej →</button>`;
         playError();
         awaitingNext = true;
     }
@@ -636,11 +544,8 @@ function submitAnswer() {
 
 function nextQuestion() {
     currentIndex++;
-    if (currentIndex >= quizVerbs.length) {
-        showResults();
-    } else {
-        showQuestion();
-    }
+    if (currentIndex >= quizVerbs.length) showResults();
+    else showQuestion();
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -651,22 +556,20 @@ function showResults() {
     showScreen('screen-results');
 
     const total = quizVerbs.length;
-    const pct   = Math.round((correctCount / total) * 100);
+    const pct   = Math.round((correctCount/total)*100);
 
-    // Emoji & message
     let emoji, msg;
-    if (pct === 100)      { emoji = '🏆'; msg = 'Perfektno! Vse pravilno! Bravo, ' + playerName + '!'; }
-    else if (pct >= 80)   { emoji = '⭐'; msg = 'Odlično, ' + playerName + '! Skoraj popolno!'; }
-    else if (pct >= 60)   { emoji = '👍'; msg = 'Dobro, ' + playerName + '! Še malo vaditi in bo perfektno!'; }
-    else if (pct >= 40)   { emoji = '📚'; msg = playerName + ', vadi naprej – naslednjič bo boljše!'; }
-    else                  { emoji = '💪'; msg = playerName + ', ne obupaj! Ponovi glagole in poskusi znova!'; }
+    if (pct===100)    { emoji='🏆'; msg=`Perfektno! Vse pravilno! Bravo, ${playerName}!`; }
+    else if (pct>=80) { emoji='⭐'; msg=`Odlično, ${playerName}! Skoraj popolno!`; }
+    else if (pct>=60) { emoji='👍'; msg=`Dobro, ${playerName}! Še malo vaditi in bo perfektno!`; }
+    else if (pct>=40) { emoji='📚'; msg=`${playerName}, vadi naprej – naslednjič bo boljše!`; }
+    else              { emoji='💪'; msg=`${playerName}, ne obupaj! Ponovi glagole in poskusi znova!`; }
 
-    document.getElementById('results-emoji').textContent   = emoji;
-    document.getElementById('results-score').innerHTML     =
+    document.getElementById('results-emoji').textContent = emoji;
+    document.getElementById('results-score').innerHTML =
         `<span class="num">${correctCount}</span> / ${total} <small style="font-size:1.2rem;color:#6b7280">(${pct}%)</small>`;
     document.getElementById('results-message').textContent = msg;
 
-    // Table
     const tbody = document.getElementById('results-tbody');
     tbody.innerHTML = '';
     results.forEach((r, i) => {
@@ -675,73 +578,45 @@ function showResults() {
         tr.innerHTML = `
             <td>${i+1}</td>
             <td>${escHtml(r.sl)}</td>
+            <td>${escHtml(r.verb)}</td>
             <td>${escHtml(r.past.join(' / '))}</td>
-            <td>${escHtml(r.userAnswer || '—')}</td>
-            <td><span class="badge ${r.isCorrect ? 'badge-ok' : 'badge-err'}">${r.isCorrect ? '✓' : '✗'}</span></td>`;
+            <td><span class="badge ${r.verbOk?'badge-ok':'badge-err'}">${escHtml(r.userVerb||'—')}</span></td>
+            <td><span class="badge ${r.pastOk?'badge-ok':'badge-err'}">${escHtml(r.userPast||'—')}</span></td>
+            <td><span class="badge ${r.isCorrect?'badge-ok':'badge-err'}">${r.isCorrect?'✓':'✗'}</span></td>`;
         tbody.appendChild(tr);
     });
 
     if (pct === 100) { playSuccess(); launchConfetti(); }
-}
 
-function escHtml(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // Auto-send email immediately
+    sendResultsEmail();
 }
 
 /* ═══════════════════════════════════════════════════════
-   ░░  EMAIL (EmailJS)  ░░
+   ░░  EMAIL  ░░
 ═══════════════════════════════════════════════════════ */
 function buildResultsText() {
     const total = quizVerbs.length;
-    const pct   = Math.round((correctCount / total) * 100);
-    let rows = results.map((r,i) =>
-        `${i+1}. [${r.isCorrect?'✓':'✗'}] ${r.sl} → Pravilno: ${r.past.join('/')} | Odgovor: ${r.userAnswer||'—'}`
-    ).join('\n');
-    return `Ime: ${playerName}\nRezultat: ${correctCount}/${total} (${pct}%)\n\n${rows}`;
-}
-
-function buildResultsHtml() {
-    const total = quizVerbs.length;
-    const pct   = Math.round((correctCount / total) * 100);
-    let rows = results.map((r,i) => {
-        const color = r.isCorrect ? '#d1fae5' : '#fee2e2';
-        const icon  = r.isCorrect ? '✅' : '❌';
-        return `<tr style="background:${color}">
-            <td style="padding:6px 10px">${i+1}</td>
-            <td style="padding:6px 10px">${escHtml(r.sl)}</td>
-            <td style="padding:6px 10px">${escHtml(r.past.join(' / '))}</td>
-            <td style="padding:6px 10px">${escHtml(r.userAnswer||'—')}</td>
-            <td style="padding:6px 10px">${icon}</td>
-        </tr>`;
-    }).join('');
-
-    return `<h2>Rezultati kviza – Nepravilni glagoli (6. razred)</h2>
-<p><strong>Ime:</strong> ${escHtml(playerName)}</p>
-<p><strong>Rezultat:</strong> ${correctCount} / ${total} (${pct}%)</p>
-<br>
-<table border="1" cellspacing="0" style="border-collapse:collapse;font-family:sans-serif">
-  <tr style="background:#eef2ff">
-    <th style="padding:8px 12px">#</th>
-    <th style="padding:8px 12px">Slovensko</th>
-    <th style="padding:8px 12px">Pravilno</th>
-    <th style="padding:8px 12px">Odgovor učenca</th>
-    <th style="padding:8px 12px">Status</th>
-  </tr>
-  ${rows}
-</table>`;
+    const pct   = Math.round((correctCount/total)*100);
+    const rows  = results.map((r,i) =>
+        `${i+1}. [${r.isCorrect?'✓':'✗'}] ${r.sl}\n` +
+        `   Glagol:      ${r.verb}           | Vpisal/-a: ${r.userVerb||'—'} [${r.verbOk?'✓':'✗'}]\n` +
+        `   Past Simple: ${r.past.join('/')} | Vpisal/-a: ${r.userPast||'—'} [${r.pastOk?'✓':'✗'}]`
+    ).join('\n\n');
+    return `Ime: ${playerName}\nRezultat: ${correctCount}/${total} (${pct}%)\nDatum: ${new Date().toLocaleString('sl-SI')}\n\n${rows}`;
 }
 
 async function sendResultsEmail() {
-    const btn    = document.getElementById('email-btn');
-    const status = document.getElementById('email-status');
+    const status   = document.getElementById('email-status');
+    const retryBtn = document.getElementById('retry-email-btn');
 
-    btn.disabled             = true;
-    status.className         = 'sending';
-    status.style.display     = 'block';
-    status.textContent       = '⏳ Pošiljam…';
+    status.className     = 'sending';
+    status.style.display = 'block';
+    status.textContent   = '⏳ Pošiljam rezultate na email…';
+    retryBtn.style.display = 'none';
 
     const total = quizVerbs.length;
-    const pct   = Math.round((correctCount / total) * 100);
+    const pct   = Math.round((correctCount/total)*100);
 
     try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
@@ -751,20 +626,18 @@ async function sendResultsEmail() {
             date:         new Date().toLocaleString('sl-SI'),
         });
         status.className  = 'sent';
-        status.textContent = '✅ Email uspešno poslan na ' + RECIPIENT_EMAIL;
+        status.textContent = '✅ Rezultati poslani na ' + RECIPIENT_EMAIL;
     } catch(err) {
         console.error(err);
         status.className  = 'error';
-        status.textContent = '❌ Napaka: ' + (err.text || err.message || 'Neznana napaka');
-        btn.disabled = false;
+        status.textContent = '❌ Email ni bil poslan: ' + (err.text || err.message || 'Neznana napaka');
+        retryBtn.style.display = 'block';
     }
 }
 
 /* ═══════════════════════════════════════════════════════
    ░░  EVENT LISTENERS  ░░
 ═══════════════════════════════════════════════════════ */
-
-// Count selector
 document.querySelectorAll('.count-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('active'));
@@ -773,30 +646,26 @@ document.querySelectorAll('.count-btn').forEach(btn => {
     });
 });
 
-// Start button
 document.getElementById('start-btn').addEventListener('click', startQuiz);
+document.getElementById('player-name').addEventListener('keydown', e => { if(e.key==='Enter') startQuiz(); });
 
-// Enter key on name input → start
-document.getElementById('player-name').addEventListener('keydown', e => {
-    if (e.key === 'Enter') startQuiz();
-});
-
-// Submit button
 document.getElementById('submit-btn').addEventListener('click', submitAnswer);
 
-// Enter key on answer input
-document.getElementById('answer-input').addEventListener('keydown', e => {
+// Enter on verb → focus past
+document.getElementById('verb-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('past-input').focus();
+});
+// Enter on past → submit
+document.getElementById('past-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') submitAnswer();
 });
 
-// Email button
-document.getElementById('email-btn').addEventListener('click', sendResultsEmail);
+document.getElementById('retry-email-btn').addEventListener('click', sendResultsEmail);
 
-// Replay button
 document.getElementById('replay-btn').addEventListener('click', () => {
     showScreen('screen-start');
     document.getElementById('email-status').style.display = 'none';
-    document.getElementById('email-btn').disabled = false;
+    document.getElementById('retry-email-btn').style.display = 'none';
 });
 </script>
 </body>
