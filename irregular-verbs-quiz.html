@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nepravilni Glagoli – Kviz (6. razred)</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Web3Forms – no SMS needed, just confirm via email at web3forms.com -->
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -379,18 +379,13 @@
 <script>
 /* ═══════════════════════════════════════════════════════
    ░░  CONFIGURATION  ░░
-   Nastavi svoje EmailJS podatke:
-   1. Ustvari brezplačen račun na https://www.emailjs.com
-   2. Dodaj Gmail storitev → dobi SERVICE_ID
-   3. Ustvari template (glej spodaj) → dobi TEMPLATE_ID
-   4. V Account → API Keys dobi PUBLIC_KEY
+   Nastavi Web3Forms Access Key:
+   1. Pojdi na https://web3forms.com
+   2. Vpiši Dejan.mauer@gmail.com in klikni "Create Access Key"
+   3. Preveri email in prilepi ključ spodaj
 ═══════════════════════════════════════════════════════ */
-const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // ← zamenjaj
-const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // ← zamenjaj
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // ← zamenjaj
-const RECIPIENT_EMAIL     = "Dejan.mauer@gmail.com";
-
-emailjs.init(EMAILJS_PUBLIC_KEY);
+const WEB3FORMS_KEY   = "YOUR_ACCESS_KEY";   // ← zamenjaj
+const RECIPIENT_EMAIL = "Dejan.mauer@gmail.com";
 
 /* ═══════════════════════════════════════════════════════
    ░░  VERB DATA  ░░  (60 nepravilnih glagolov, 6. razred)
@@ -743,36 +738,39 @@ async function sendResultsEmail() {
     const btn    = document.getElementById('email-btn');
     const status = document.getElementById('email-status');
 
-    if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-        status.className  = 'error';
+    if (WEB3FORMS_KEY === "YOUR_ACCESS_KEY") {
+        status.className     = 'error';
         status.style.display = 'block';
-        status.textContent = '⚠️ EmailJS ni nastavljen. Prosim konfiguracija (glej komentar v kodi).';
+        status.textContent   = '⚠️ Web3Forms Access Key ni nastavljen. Pojdi na web3forms.com, vpiši email in dobi ključ.';
         return;
     }
 
-    btn.disabled      = true;
-    status.className  = 'sending';
-    status.style.display = 'block';
-    status.textContent = '⏳ Pošiljam…';
+    btn.disabled             = true;
+    status.className         = 'sending';
+    status.style.display     = 'block';
+    status.textContent       = '⏳ Pošiljam…';
 
     const total = quizVerbs.length;
     const pct   = Math.round((correctCount / total) * 100);
+    const date  = new Date().toLocaleString('sl-SI');
+
+    const body = new FormData();
+    body.append("access_key",  WEB3FORMS_KEY);
+    body.append("subject",     `Kviz – Nepravilni glagoli | ${playerName} | ${correctCount}/${total} (${pct}%)`);
+    body.append("from_name",   "Nepravilni Glagoli Kviz");
+    body.append("replyto",     RECIPIENT_EMAIL);
+    body.append("message",     buildResultsText());
 
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_email:      RECIPIENT_EMAIL,
-            player_name:   playerName,
-            score:         `${correctCount} / ${total} (${pct}%)`,
-            results_text:  buildResultsText(),
-            results_html:  buildResultsHtml(),
-            date:          new Date().toLocaleString('sl-SI'),
-        });
+        const res  = await fetch("https://api.web3forms.com/submit", { method:"POST", body });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || "Napaka");
         status.className  = 'sent';
         status.textContent = '✅ Email uspešno poslan na ' + RECIPIENT_EMAIL;
     } catch(err) {
         console.error(err);
         status.className  = 'error';
-        status.textContent = '❌ Napaka pri pošiljanju: ' + (err.text || err.message || 'Neznana napaka');
+        status.textContent = '❌ Napaka: ' + err.message;
         btn.disabled = false;
     }
 }
