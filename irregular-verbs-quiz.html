@@ -622,19 +622,27 @@ async function sendResultsEmail() {
     status.textContent   = '⏳ Pošiljam rezultate na email…';
     retryBtn.style.display = 'none';
 
-    const total = quizVerbs.length;
-    const pct   = Math.round((correctCount/total)*100);
+    const total   = quizVerbs.length;
+    const pct     = Math.round((correctCount/total)*100);
+    const payload = {
+        player_name:  playerName,
+        score:        `${correctCount} / ${total} (${pct}%)`,
+        results_text: buildResultsText(),
+        date:         new Date().toLocaleString('sl-SI'),
+    };
+
+    // Collect unique recipients – always include the default address
+    const recipients = [DEFAULT_EMAIL];
+    const extra = recipientEmail.toLowerCase();
+    if (extra && extra !== DEFAULT_EMAIL.toLowerCase()) recipients.push(recipientEmail);
 
     try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-            to_email:     recipientEmail,
-            player_name:  playerName,
-            score:        `${correctCount} / ${total} (${pct}%)`,
-            results_text: buildResultsText(),
-            date:         new Date().toLocaleString('sl-SI'),
-        });
+        await Promise.all(recipients.map(addr =>
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...payload, to_email: addr })
+        ));
+        const sent = recipients.join(' in ');
         status.className  = 'sent';
-        status.textContent = '✅ Rezultati poslani na ' + recipientEmail;
+        status.textContent = '✅ Rezultati poslani na ' + sent;
     } catch(err) {
         console.error(err);
         status.className  = 'error';
