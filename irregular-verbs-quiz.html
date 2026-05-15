@@ -205,6 +205,11 @@
         </div>
 
         <div class="form-group">
+            <label for="recipient-email">Pošlji rezultate na email:</label>
+            <input type="text" id="recipient-email" placeholder="npr. mama@gmail.com" maxlength="100">
+        </div>
+
+        <div class="form-group">
             <label>Število vprašanj:</label>
             <div class="count-grid">
                 <button class="count-btn" data-count="5">5</button>
@@ -301,7 +306,7 @@
 const EMAILJS_PUBLIC_KEY  = "L58qZH2T4whKiPIja";
 const EMAILJS_SERVICE_ID  = "service_3vi9ymm";
 const EMAILJS_TEMPLATE_ID = "template_3szu7rd";
-const RECIPIENT_EMAIL     = "Dejan.mauer@gmail.com";
+const DEFAULT_EMAIL       = "Dejan.mauer@gmail.com";
 
 emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -375,6 +380,7 @@ const VERBS = [
    ░░  STATE  ░░
 ═══════════════════════════════════════════════════════ */
 let playerName    = "";
+let recipientEmail = DEFAULT_EMAIL;
 let questionCount = 10;
 let quizVerbs     = [];
 let currentIndex  = 0;
@@ -467,7 +473,8 @@ function escHtml(s) {
    ░░  QUIZ FLOW  ░░
 ═══════════════════════════════════════════════════════ */
 function startQuiz() {
-    playerName   = document.getElementById('player-name').value.trim() || "Učenec";
+    playerName     = document.getElementById('player-name').value.trim() || "Učenec";
+    recipientEmail = document.getElementById('recipient-email').value.trim() || DEFAULT_EMAIL;
     quizVerbs    = shuffle(VERBS).slice(0, questionCount);
     currentIndex = 0; correctCount = 0; wrongCount = 0; results = [];
     showScreen('screen-quiz');
@@ -620,13 +627,14 @@ async function sendResultsEmail() {
 
     try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_email:     recipientEmail,
             player_name:  playerName,
             score:        `${correctCount} / ${total} (${pct}%)`,
             results_text: buildResultsText(),
             date:         new Date().toLocaleString('sl-SI'),
         });
         status.className  = 'sent';
-        status.textContent = '✅ Rezultati poslani na ' + RECIPIENT_EMAIL;
+        status.textContent = '✅ Rezultati poslani na ' + recipientEmail;
     } catch(err) {
         console.error(err);
         status.className  = 'error';
