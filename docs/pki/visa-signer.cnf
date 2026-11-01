@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------
+# Visa Signer (VS) certificate profile for ICAO Doc 9303 Part 13 visa seals
+#
+# One file serves two purposes:
+#   * the signer side creates its PKCS#10 request with  [req] / vs_req_ext
+#   * the CSCA issues the certificate with                vs_cert_ext
+#
+# Profile basis: Doc 9303 Part 12 signer certificate profile (8th ed.) and
+# Part 13 Appendix A (visa). Adjust the four variables below per key period.
+# ---------------------------------------------------------------------------
+
+# Two-letter country code + two alphanumerics. Goes into the seal header and
+# into the certificate CN. Keep it stable per signing site / key series.
+SIGNER_ID        = SIV1
+
+# Private key usage period = the window in which this key signs seals.
+# Three months is common practice. Certificate validity is set by the CSCA
+# and must cover this window + 5 years (max visa validity) + margin.
+KEY_PERIOD_START = 20260101000000Z
+KEY_PERIOD_END   = 20260401000000Z
+
+# Where the CSCA publishes its CRL.
+CRL_URL          = http://csca-si.gov.si/crl/csca-slovenia.crl
+
+# ---------------------------------------------------------------------------
+[ req ]
+prompt              = no
+distinguished_name  = vs_dn
+req_extensions      = vs_req_ext
+default_md          = sha256
+utf8                = yes
+string_mask         = utf8only
+
+[ vs_dn ]
+# Part 12: C is mandatory and must equal the issuer's C. O/OU/CN recommended.
+# Part 13: signer identifier must be recoverable from the subject DN -> CN.
+C   = SI
+O   = state-institutions
+OU  = visa
+CN  = $SIGNER_ID
+
+[ vs_req_ext ]
+# The CSCA re-applies its own extension set; these only state the request.
+keyUsage            = critical, digitalSignature
+2.23.136.1.1.6.2    = ASN1:SEQUENCE:doc_type_list
+
+# ---------------------------------------------------------------------------
+# Extensions the CSCA places into the issued certificate.
+# Use with:  openssl ca ... -extfile visa-signer.cnf -extensions vs_cert_ext
+#       or:  openssl x509 -req ... -extfile visa-signer.cnf -extensions vs_cert_ext
+# ---------------------------------------------------------------------------
+[ vs_cert_ext ]
+# No basicConstraints: this is an end-entity signer, not a CA.
+keyUsage                = critical, digitalSignature
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always
+crlDistributionPoints   = URI:$CRL_URL
+# privateKeyUsagePeriod (id-ce 16). OpenSSL has no keyword for it, so it is
+# written as raw ASN.1: SEQUENCE { [0] notBefore, [1] notAfter } GeneralizedTime.
+2.5.29.16               = ASN1:SEQUENCE:pkup
+# ICAO documentTypeList (id-icao-mrtd-security-extensions-documentTypeList).
+# Restricts this signer to visas ("V"). Verifiers may reject a passport DS
+# that is misused for visa seals.
+2.23.136.1.1.6.2        = ASN1:SEQUENCE:doc_type_list
+
+[ pkup ]
+notBefore   = IMP:0,GENERALIZEDTIME:$KEY_PERIOD_START
+notAfter    = IMP:1,GENERALIZEDTIME:$KEY_PERIOD_END
+
+[ doc_type_list ]
+# DocumentTypeListSyntax ::= SEQUENCE { version INTEGER (v0), docTypeList SET OF PrintableString (SIZE 1..2) }
+version     = INTEGER:0
+docTypeList = SET:doc_types
+
+[ doc_types ]
+visa        = PRINTABLESTRING:V

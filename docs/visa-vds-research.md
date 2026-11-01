@@ -297,6 +297,10 @@ The seal contains no certificate, no key identifier and no hash of the certifica
 
 After the lookup the verifier validates the certificate against CSCA-Slovenia and the CRL, checks that the seal's signature date falls inside the certificate's private key usage period, and then verifies the plain ECDSA signature over the header and message zone with the public key from that certificate. The successor IDB format differs here. It references the signer by five bytes of the SHA-1 hash of the certificate and can embed the certificate in the barcode, which is the model the future EU digital visa will use.
 
+## 11. Implementation files
+
+The folder docs/pki holds the Visa Signer certificate profile as an OpenSSL configuration, a test CSCA for rehearsals, a script that issues a test certificate, a Python script that builds and verifies a visa seal against it, and a README with the USB HSM procedure on Windows.
+
 ## 9. Sources
 
 ICAO Doc 9303 Part 13 consolidated: https://www.icao.int/publications/Documents/9303_p13_cons_en.pdf

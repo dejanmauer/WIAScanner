@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+# Test CSCA for rehearsing Visa Signer issuance with OpenSSL.
+# This stands in for CSCA-Slovenia during development only.
+# The real CSCA is operated by the Ministry of the Interior and will use its
+# own CA product; hand it the profile in visa-signer.cnf / README.md instead.
+# ---------------------------------------------------------------------------
+HOME     = .
+CA_DIR   = ./test-csca
+
+[ ca ]
+default_ca = test_csca
+
+[ test_csca ]
+dir              = $CA_DIR
+database         = $dir/index.txt
+new_certs_dir    = $dir/newcerts
+serial           = $dir/serial           # hex; becomes the seal's certificate reference
+crlnumber        = $dir/crlnumber
+certificate      = $dir/csca.crt
+private_key      = $dir/csca.key
+default_md       = sha256
+default_crl_days = 90                    # Part 12: new CRL at least every 90 days
+policy           = csca_policy
+unique_subject   = no
+copy_extensions  = none                  # never copy requested extensions blindly
+name_opt         = ca_default
+cert_opt         = ca_default
+
+[ csca_policy ]
+countryName            = match           # signer C must equal CSCA C
+organizationName       = supplied
+organizationalUnitName = optional
+commonName             = supplied
+
+# --- self-signed CSCA certificate ------------------------------------------
+[ req ]
+prompt             = no
+distinguished_name = csca_dn
+x509_extensions    = csca_ext
+default_md         = sha256
+string_mask        = utf8only
+
+[ csca_dn ]
+C  = SI
+O  = state-institutions
+OU = e-passport
+CN = TEST-CSCA-Slovenia
+
+[ csca_ext ]
+basicConstraints        = critical, CA:TRUE, pathlen:0
+keyUsage                = critical, keyCertSign, cRLSign
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always
+crlDistributionPoints   = URI:http://csca-si.gov.si/crl/csca-slovenia.crl
