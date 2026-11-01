@@ -271,6 +271,32 @@ Create test seals with Sealgen and verify them with your code and with the Sealv
 
 Decide the curve once, either brainpoolP256r1 or NIST P-256. Decide the header version. Version 4 is current and allows long serial numbers. Version 3 is still common. Decide whether the signing HSM is a Nitrokey class device for a pilot or a certified HSM for production. Decide where you publish certificates and CRLs and who maintains the partner exchange. Decide whether you build the verifier for VDS only or for VDS and IDB together, because the EU digital visa will arrive as IDB.
 
+## 10. Slovenia: from the passport CSCA to visa seals
+
+Slovenia already runs a CSCA for ePassports. Public certificate collections list it with the distinguished name C=si, O=state-institutions, OU=e-passport, CN=CSCA-Slovenia and point to csca-si.gov.si as the publication site. The Ministry of the Interior owns the passport and identity document systems, so the CSCA sits with that ministry while visas are issued by the Ministry of Foreign and European Affairs. The foreign ministry published a procurement notice around May 2022 for hardware and software to print 2D barcodes on visa stickers with 36 months of maintenance, so a first implementation most likely exists. The steps below describe what the PKI side needs regardless of whether that system is extended or replaced.
+
+### 10.1 What the ministry needs from the CSCA
+
+You do not need a second CSCA. The visa seal must chain to the national CSCA, the same root that signs passport Document Signer certificates. The CSCA may keep an RSA key. Part 13 mandates ECDSA for the seal signature only, so the Visa Signer key is an EC key while the certificate that carries it can be RSA-signed by the existing CSCA.
+
+Agree a written arrangement between the two ministries, then extend the CSCA Certificate Policy and Certification Practice Statement with a Visa Signer certificate type, its naming rule, its lifetimes and its revocation procedure. Allocate one or more signer identifiers. The identifier is the two-letter code SI followed by two alphanumeric characters, for example SIV1. Register each identifier and reserve it for one signing site or one key series.
+
+Generate every Visa Signer key pair on an HSM at the signing service of the visa system. Export a PKCS#10 request, carry it to the CSCA, and let the CSCA issue the certificate with a short serial number. Rotate the signer key roughly every three months, so the CSCA must be able to issue four to eight Visa Signer certificates per year on a schedule rather than only at passport key ceremonies.
+
+Publish each Visa Signer certificate at the moment its key starts signing, not later. Put it next to the CSCA certificate and CRL on the CSCA publication site, hand it to the other Schengen states through the exchange channel established for Decision C(2020) 2672, and upload it to the ICAO PKD if Slovenia participates there. Keep the CRL at the 90-day cadence Part 12 expects and revoke a Visa Signer certificate immediately on key compromise.
+
+### 10.2 Is the certificate a normal X.509 certificate?
+
+Yes. It is a standard X.509 v3 certificate under RFC 5280 and any CA software can produce it. It must however follow the Doc 9303 Part 12 signer certificate profile, which constrains the ordinary fields rather than adding exotic ones. The public key is an EC key on a Part 13 permitted curve, in practice brainpoolP256r1 or NIST P-256. Key usage is digitalSignature only and critical. The subject distinguished name must carry the signer identifier, so use a DN such as C=SI, O=state-institutions, OU=visa, CN=SIV1. The serial number is the value the seal will reference, so keep it short and positive. Include authorityKeyIdentifier, subjectKeyIdentifier, privateKeyUsagePeriod for the signing window and a cRLDistributionPoints URL. Part 12 defines a documentTypeList extension that names the document types a signer may sign. Put the visa code V there so a verifier can refuse a passport signer that is misused for visas. Part 12 also gives a dedicated bar code signer profile in its 8th edition. Read that section and Part 13 Appendix A together before you fix the extension set, because this research could not open the PDFs.
+
+Validity has two layers. The private key signs for about three months. The certificate itself stays valid for that window plus the longest visa validity it covers, which is five years for multiple entry visas, plus a margin, so about five and a half years.
+
+### 10.3 What links the signature to the certificate
+
+The seal contains no certificate, no key identifier and no hash of the certificate. The link is made by three header fields only. The issuing country, the signer identifier and the certificate reference together name exactly one certificate. Part 13 requires that the signer identifier and the certificate reference match the subject distinguished name and the serial number of the signer certificate. The verifier therefore takes the country SVN, the identifier SIV1 and the reference, which is the serial number in upper case hexadecimal without leading zeros, and looks the certificate up in its local store. In a version 3 header the reference is exactly five hex characters, so serial numbers must stay below 0x100000. In a version 4 header the reference has a two-character length prefix and can be longer.
+
+After the lookup the verifier validates the certificate against CSCA-Slovenia and the CRL, checks that the seal's signature date falls inside the certificate's private key usage period, and then verifies the plain ECDSA signature over the header and message zone with the public key from that certificate. The successor IDB format differs here. It references the signer by five bytes of the SHA-1 hash of the certificate and can embed the certificate in the barcode, which is the model the future EU digital visa will use.
+
 ## 9. Sources
 
 ICAO Doc 9303 Part 13 consolidated: https://www.icao.int/publications/Documents/9303_p13_cons_en.pdf
