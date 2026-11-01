@@ -301,6 +301,16 @@ After the lookup the verifier validates the certificate against CSCA-Slovenia an
 
 The folder docs/pki holds the Visa Signer certificate profile as an OpenSSL configuration, a test CSCA for rehearsals, a script that issues a test certificate, a Python script that builds and verifies a visa seal against it, and a README with the USB HSM procedure on Windows.
 
+## 12. Reusing the Visa Signer for the digital visa with facial image
+
+The EU digital visa under Regulation 2023/2685 will not be a VDS. A facial image does not fit the 18-byte header and single-byte tags of Doc 9303-13, so the format will be the ICAO Datastructure for Barcode (IDB). IDB is a Base32 text barcode whose payload holds a header with country, signature algorithm, certificate reference and signing date, a message zone with tags for the facial image, MRZ and expiry, an optional embedded signer certificate, and an ECDSA signature. The certificate reference is a truncated SHA-1 hash of the certificate rather than the serial number.
+
+Cryptographically the same key and certificate work for both. IDB uses ECDSA with the hash chosen by key size, exactly as Part 13 does, and the Part 12 signer profile with keyUsage digitalSignature and documentTypeList "V" fits an IDB visa as well. A single key signing two formats does not create a practical cross-format forgery because every VDS payload starts with 0xDC and every IDB payload has a different header layout, so a signature over one can never parse as the other.
+
+Three things still argue for a separate key series. First, the implementing act that will carry the digital visa specifications is not yet adopted and the regulation lets the Commission classify it, so it may mandate its own signer naming, lifetimes or distribution and you want to change the digital visa signer without touching sticker production. Second, IDB barcodes often embed the signer certificate to make offline verification easier, and a brainpoolP256r1 certificate signed by an RSA-3072 CSCA is roughly 650 bytes while the same certificate signed by an EC CSCA is around 400 bytes. With a facial image of 1.5 to 2.5 kilobytes already in the symbol, a QR code version 40 holds about 2.9 kilobytes, so certificate size decides whether embedding is possible. Ask the CSCA whether it can sign the digital visa signers with an EC CSCA key or a CSCA link certificate on an EC key. Third, revocation and rotation then stay independent, so a compromise of the sticker signing service does not invalidate digital visas and vice versa.
+
+Keep the key size at 256 bits for both. Moving to 384 bits would add 32 bytes to every signature and an EC-384 certificate to every embedded barcode for no gain that the visa lifetime needs. Plan the signing service so that the HSM holds two labels per period, SIV1-2026Q1 for the sticker VDS and SIE1-2026Q1 for the digital visa IDB, and so that the seal builder selects the format from the document type rather than from the key.
+
 ## 9. Sources
 
 ICAO Doc 9303 Part 13 consolidated: https://www.icao.int/publications/Documents/9303_p13_cons_en.pdf
