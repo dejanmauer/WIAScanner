@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Lov po Bariju</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap">
+<style>
+/* Layout: one phone-width column. Sticky scoreboard on top, a "passport" of task cards below; each solved task gets an ink stamp. */
+:root{
+  --stone:#eaf1f4; --card:#ffffff; --ink:#10283a; --muted:#527084; --line:#c9d8e0;
+  --sea:#0a5f8f; --sea-soft:#d6e9f3; --tomato:#d93a22; --wheat:#f4b82e; --wheat-soft:#fdf0cc; --olive:#2f7d4f; --olive-soft:#dcf0e2;
+  --on-sea:#ffffff;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --stone:#0b1c28; --card:#132b3b; --ink:#eaf3f7; --muted:#9db6c5; --line:#27475b;
+  --sea:#58b6e6; --sea-soft:#173b50; --tomato:#ff7058; --wheat:#f4b82e; --wheat-soft:#3d3312; --olive:#6fcf93; --olive-soft:#173a26;
+  --on-sea:#06202e; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --stone:#0b1c28; --card:#132b3b; --ink:#eaf3f7; --muted:#9db6c5; --line:#27475b;
+  --sea:#58b6e6; --sea-soft:#173b50; --tomato:#ff7058; --wheat:#f4b82e; --wheat-soft:#3d3312; --olive:#6fcf93; --olive-soft:#173a26;
+  --on-sea:#06202e; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--stone);color:var(--ink);font:400 16px/1.5 var(--body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--stone)}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1}
+h1{font-size:2.5rem;font-weight:700;letter-spacing:-.01em}
+h1 span{color:var(--tomato)}
+h2{font-size:1.3rem;font-weight:600}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.eyebrow{font:800 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--sea)}
+.lead{color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--wheat);outline-offset:2px}
+
+.hero{display:flex;flex-direction:column;gap:8px}
+.wave{height:14px;background:
+  radial-gradient(circle at 10px -3px,transparent 9px,var(--sea) 10px,var(--sea) 12px,transparent 13px) 0 0/20px 14px repeat-x;opacity:.7}
+
+.board{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--sea);color:var(--on-sea);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 18px rgba(8,40,60,.25)}
+.board-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.board-top b{font:600 1.05rem var(--display)}
+.pts{font:700 1.5rem/1 var(--display);font-variant-numeric:tabular-nums}
+.pts small{font:600 .8rem var(--body);opacity:.85}
+.bar{height:8px;border-radius:8px;background:color-mix(in srgb,var(--on-sea) 25%,transparent);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--wheat);border-radius:8px;transition:width .4s}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid color-mix(in srgb,var(--on-sea) 45%,transparent);background:transparent;color:var(--on-sea);border-radius:999px;padding:5px 12px;font-weight:800;font-size:.9rem;min-height:36px}
+.chip[aria-pressed="true"]{background:var(--on-sea);color:var(--sea);border-color:var(--on-sea)}
+.chip.add{border-style:dashed}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row > input{flex:1 1 160px;min-width:0}
+input[type=text]{font:inherit;padding:11px 12px;border-radius:12px;border:2px solid var(--line);background:var(--stone);color:var(--ink)}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:800;background:var(--sea);color:var(--on-sea);min-height:44px}
+.btn.alt{background:var(--sea-soft);color:var(--ink)}
+.btn.warn{background:var(--tomato);color:#fff}
+.btn.ghost{background:transparent;border:2px solid var(--line);color:var(--muted)}
+.avatars{display:flex;gap:6px;flex-wrap:wrap}
+.av{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--stone);font-size:1.3rem}
+.av[aria-pressed="true"]{border-color:var(--tomato);background:var(--wheat-soft)}
+.rules{margin:0;padding-left:1.1em;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.rules b{color:var(--ink)}
+
+.tasks{display:flex;flex-direction:column;gap:10px}
+.task{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.task.done{border-color:var(--olive)}
+.task-head{width:100%;display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;text-align:left;background:none;border:0;padding:14px}
+.num{width:44px;height:44px;border-radius:14px;background:var(--sea-soft);display:grid;place-items:center;font-size:1.4rem}
+.task-head .t{min-width:0}
+.task-head .t b{display:block;font:600 1.05rem/1.2 var(--display)}
+.task-head .t span{font-size:.85rem;color:var(--muted)}
+.tag{font:800 .8rem var(--body);border-radius:999px;padding:4px 10px;background:var(--wheat-soft);color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.task.done .tag{background:var(--olive-soft)}
+.task-body{padding:0 14px 16px;display:flex;flex-direction:column;gap:14px;position:relative}
+.mission{font-size:1.02rem}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.acts a{text-decoration:none;display:inline-flex;align-items:center}
+.hint{background:var(--wheat-soft);border-radius:12px;padding:10px 12px;font-size:.95rem}
+.photos{display:flex;gap:10px;flex-wrap:wrap}
+.shot{position:relative;flex:1 1 120px;max-width:100%;aspect-ratio:4/3;border:2px dashed var(--sea);border-radius:14px;background:var(--sea-soft);display:grid;place-items:center;text-align:center;font-weight:800;color:var(--sea);overflow:hidden;cursor:pointer;padding:6px}
+.shot input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.shot.has{border-style:solid;border-color:var(--olive)}
+.shot.has::after{content:"Zamenjaj";position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.6);color:#fff;font-size:.72rem;padding:2px 8px;border-radius:999px}
+.quiz{border-top:1px dashed var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.quiz p{font-weight:800}
+.opt{text-align:left;border:2px solid var(--line);background:var(--stone);border-radius:12px;padding:10px 12px;font-weight:600;min-height:44px}
+.opt.ok{border-color:var(--olive);background:var(--olive-soft)}
+.opt.no{border-color:var(--tomato);opacity:.55;text-decoration:line-through}
+.opt:disabled{cursor:default}
+.judge{border-top:1px dashed var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.judge p{font-weight:800;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.judge p span{color:var(--muted);font-variant-numeric:tabular-nums}
+.stars{display:flex;gap:6px}
+.star{width:46px;height:46px;border-radius:12px;border:2px solid var(--line);background:var(--stone);color:var(--line);font-size:1.5rem;line-height:1}
+.star.on{color:var(--wheat);border-color:var(--wheat);background:var(--wheat-soft)}
+.clip{width:100%;max-height:320px;border-radius:14px;background:#000}
+.fact{background:var(--olive-soft);border-radius:12px;padding:10px 12px;font-size:.95rem}
+.stamp{position:absolute;right:10px;top:-6px;width:92px;height:92px;border:3px double var(--tomato);border-radius:50%;color:var(--tomato);display:grid;place-items:center;text-align:center;font:700 .72rem/1.15 var(--display);letter-spacing:.08em;transform:rotate(14deg);opacity:.85;pointer-events:none;animation:thump .35s ease-out}
+@keyframes thump{from{transform:rotate(14deg) scale(1.8);opacity:0}}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}.bar i{transition:none}}
+.locked{color:var(--muted);text-align:center;padding:4px 0 2px}
+
+.rank{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.rank li{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--stone)}
+.rank li:first-child{background:var(--wheat-soft)}
+.rank .pos{font:700 1.1rem var(--display);color:var(--sea)}
+.rank .sc{font:700 1.1rem var(--display);font-variant-numeric:tabular-nums}
+.rank small{display:block;color:var(--muted);font-size:.8rem}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}
+.foot{color:var(--muted);font-size:.85rem;text-align:center}
+
+.net{font:800 .75rem var(--body);opacity:.8;white-space:nowrap}
+.net.on{opacity:1}
+.board small{font-weight:600}
+.tag.wait{background:var(--wheat-soft)} .tag.ok{background:var(--olive-soft)} .tag.no{background:var(--tomato);color:#fff}
+.status{border-radius:12px;padding:10px 12px;font-weight:800}
+.status.wait{background:var(--wheat-soft)} .status.ok{background:var(--olive-soft)} .status.no{background:var(--tomato);color:#fff}
+.btn.ok{background:var(--olive);color:var(--card)}
+.sub{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.sub.wait{border-color:var(--wheat)} .sub.ok{border-color:var(--olive)} .sub.no{border-color:var(--tomato)}
+.subh{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.subh .tag{margin-left:auto}
+.shot.static{cursor:default;border-style:solid;font-weight:600;font-size:.85rem;color:var(--muted)}
+.shot.static::after{content:none}
+.chips.dark .chip{color:var(--ink);border-color:var(--line)}
+.chips.dark .chip[aria-pressed="true"]{background:var(--sea);color:var(--on-sea);border-color:var(--sea)}
+.grid{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.gname{width:26px;font-size:1.1rem}
+.cell{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;font:800 .72rem var(--body);font-variant-numeric:tabular-nums;background:var(--stone);color:var(--muted);border:1px solid var(--line)}
+.cell.ok{background:var(--olive);color:var(--card);border-color:var(--olive)}
+.cell.wait{background:var(--wheat);color:#10283a;border-color:var(--wheat)}
+.cell.no{background:var(--tomato);color:#fff;border-color:var(--tomato)}
+.legend{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.85rem}
+html{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">Bari Vecchia · Apulija · Italija</span>
+    <h1>Lov po <span>Bariju</span></h1>
+    <p class="lead">Štirinajst nalog v starem mestu čaka nate. Najdi, fotografiraj, posnemi in odgovori na vprašanje. Starš potrdi vsako oddajo.</p>
+    <div class="wave" aria-hidden="true"></div>
+  </header>
+  <div id="app"></div>
+  <p class="foot">Hodite skupaj in pazite na skuterje v ozkih ulicah. Slike potujejo šifrirane in jih vidi samo starš s svojo povezavo.</p>
+</div>
+<script>
+const TASKS = [
+ {id:"grad", ll:[41.1282,16.8663], ico:"🏰", title:"Grad Castello Svevo", place:"Piazza Federico II di Svevia",
+  mission:"Poišči mogočen kamnit grad na robu starega mesta. Fotografiraj ekipo pred mostom, ki vodi čez jarek do vhoda.",
+  hint:"Grad stoji na zahodnem robu starega mesta, nekaj korakov od katedrale San Sabino. Vhod je na južni strani.",
+  map:"Castello Svevo Bari",
+  q:"Kaj obdaja grad, da napadalci niso mogli do zidov?", a:["Globok jarek","Gozd","Visoka živa meja"], c:0,
+  fact:"Grad so okoli leta 1132 zgradili Normani. Cesar Friderik II. ga je sto let pozneje obnovil. Morje je nekoč segalo do njegovih severnih zidov."},
+ {id:"orecchiette", ico:"👵", title:"Gospa z ušesci", place:"Strada Arco Basso",
+  mission:"Poišči žensko, ki pred hišo na leseni mizi izdeluje orecchiette. Vljudno vprašaj »Posso fare una foto?« in fotografiraj testenine.",
+  hint:"Ulica se začne pri obokih nasproti gradu Castello Svevo. Sledi mizam s sušečimi se testeninami.",
+  map:"Strada Arco Basso Bari",
+  q:"Kaj pomeni beseda »orecchiette«?", a:["Majhna ušesa","Majhne školjke","Majhni klobuki"], c:0,
+  fact:"Vsako ušesce nastane z enim potegom noža in obratom čez palec. Izkušena gospa jih naredi več sto na uro."},
+ {id:"nonna", ico:"👵🏼", title:"Selfi z nonno", place:"Kjerkoli v starem mestu", judge:5,
+  mission:"Vsak član ekipe se mora fotografirati z eno italijansko babico. Najprej vljudno vprašaj: »Possiamo fare una foto insieme?« Na koncu reci »Grazie mille!«",
+  hint:"Babice pogosto sedijo na stolih pred hišnimi vrati. Nasmeh in »Buongiorno, signora!« odpreta vsa vrata.",
+  map:"Bari Vecchia",
+  q:"Kako se po italijansko reče babica?", a:["Zia","Nonna","Mamma"], c:1,
+  fact:"Nonna je v Italiji glava kuhinje. »Zia« je teta, »mamma« pa mama."},
+ {id:"buongiorno", ico:"🎬", title:"Buongiorno!", place:"Kjerkoli v starem mestu", judge:5, video:true,
+  mission:"Posnemi kratek video domačina, ki v kamero reče »Buongiorno!«. Prosi ga: »Può dire buongiorno alla camera, per favore?«",
+  hint:"Poskusi pri prodajalcu, natakarju ali ribiču. Video posnemi s kamero telefona, da ostane v galeriji.",
+  map:"Bari Vecchia",
+  q:"Kaj pomeni »buongiorno«?", a:["Dober dan","Lahko noč","Dober tek"], c:0,
+  fact:"Po kosilu Italijani preklopijo na »buonasera«, dober večer. »Buonanotte« rečejo šele pred spanjem."},
+ {id:"turek", ico:"🗿", title:"Glava s turbanom", place:"Strada Quercia 10",
+  mission:"Najdi kamnito glavo s turbanom in brki. Vzidana je nad vrati hiše. Fotografiraj jo.",
+  hint:"Poglej navzgor nad vhod s hišno številko 10. Domačini ji pravijo »la cape du turche«.",
+  map:"Testa del Turco Strada Quercia Bari",
+  q:"Kdo je po legendi Turku odsekal glavo?", a:["Sveti Nikolaj","Čarovnica Befana","Ribič iz pristanišča"], c:1,
+  fact:"Legenda pravi, da se je emir Mufarrag v noči pred tremi kralji posmehoval Befani. Ostal je brez glave, ta pa je okamnela nad vrati."},
+ {id:"carovnice", ico:"🐈‍⬛", title:"Obok čarovnic", place:"Arco delle Masciàre, blizu Strada Quercia",
+  mission:"Čisto blizu kamnite glave je obok, pod katerim so se po legendi zbirale čarovnice. Fotografiraj obok. Preveri, ali je v bližini črna mačka.",
+  hint:"Obok nima uradnega imena. Vprašaj domačina: »Dov'è l'arco delle masciare?«",
+  map:"Arco delle Masciare Bari Vecchia",
+  q:"V kaj so se po legendi spremenile čarovnice po obredu?", a:["V galebe","V mačke","V kamen"], c:1,
+  fact:"»Masciàre« je bareška beseda za čarovnice. Po zgodbi so skočile z oboka, pristale na vseh štirih in odtekle kot mačke."},
+ {id:"meraviglia", ico:"💞", title:"Obok zaljubljencev", place:"Arco Meraviglia",
+  mission:"Poišči majhen obok, ki visoko nad ulico povezuje dve hiši. Fotografiraj ga od spodaj.",
+  hint:"Išči ga v ozki ulici med katedralo San Sabino in baziliko sv. Nikolaja. Na zidu je tablica z imenom.",
+  map:"Arco Meraviglia Bari",
+  q:"Kako hitro so ga po legendi zgradili?", a:["V eni sami noči","V sedmih letih","V enem tednu"], c:0,
+  fact:"Zaljubljenca iz sosednjih hiš se nista smela srečati. Obok naj bi čez noč postal njun skrivni most. V resnici nosi ime družine Meraviglia iz Milana."},
+ {id:"steber", ll:[41.1303,16.8703], ico:"🏛️", title:"Rdečkasti steber", place:"Kripta bazilike sv. Nikolaja",
+  mission:"Stopi po stopnicah v kripto bazilike. Med vsemi stebri poišči enega rdečkastega, ki je drugačen od ostalih. V kripti bodi tiho.",
+  hint:"Stoji v kotu kripte in je zaščiten z železno ograjo.",
+  map:"Basilica San Nicola Bari",
+  q:"V čem je ta steber zaprt?", a:["V stekleni vitrini","V železni kletki","V lesenem zaboju"], c:1,
+  fact:"V kripti počiva sveti Nikolaj, vzornik Miklavža in Božička. Mornarji iz Barija so njegove relikvije pripeljali leta 1087."},
+ {id:"biki", ll:[41.1303,16.8703], ico:"🐂", title:"Živali na fasadah", place:"Bazilika sv. Nikolaja in okolica", photos:3,
+  mission:"Poišči tri različne kamnite obraze ali živali na starih fasadah. Vsakega fotografiraj posebej.",
+  hint:"Začni pri glavnem vhodu bazilike. Poglej, kdo nosi stebra ob vratih.",
+  map:"Basilica San Nicola Bari",
+  q:"Kateri živali nosita stebra ob glavnem vhodu bazilike?", a:["Dva leva","Dva slona","Dva bika"], c:2,
+  fact:"Kamnoseki so pred skoraj tisoč leti na cerkve klesali živali kot varuhe vhoda."},
+ {id:"lev", ll:[41.1277,16.8722], ico:"🦁", title:"Sramotilni steber", place:"Piazza Mercantile", judge:10,
+  mission:"Na trgu poišči bel sramotilni steber, ob katerem sedi kamnit lev. Posnemi najbolj smešno fotografijo ekipe ob stebru. Starši izberejo zmagovalko.",
+  hint:"Steber stoji na robu trga, blizu palače z uro (Palazzo del Sedile).",
+  map:"Colonna della Giustizia Bari",
+  q:"Koga so nekoč privezovali k temu stebru?", a:["Dolžnike, ki niso plačali","Pobegle konje","Gusarje"], c:0,
+  fact:"Imenuje se Colonna della Giustizia, steber pravice. Kdor ni vrnil dolga, je moral tu stati pred vsem mestom."},
+ {id:"cesta", ll:[41.1267,16.8723], ico:"🛣️", title:"Rimska cesta", place:"Piazza del Ferrarese",
+  mission:"Na trgu so pod nivojem tlakovcev odkriti ostanki stare rimske ceste. Najdi jih in fotografiraj.",
+  hint:"Išči ograjen, poglobljen del tlaka z velikimi temnimi kamni.",
+  map:"Piazza del Ferrarese Bari",
+  q:"Kako se je imenovala cesta, ki je Rim povezovala z Jadranom?", a:["Via Traiana","Via Dolorosa","Via Veneto"], c:0,
+  fact:"Cesto je dal okoli leta 109 zgraditi cesar Trajan. Po njej so vojaki in trgovci potovali do pristanišča Brindisi."},
+ {id:"coln", ll:[41.1258,16.8754], ico:"⛵", title:"Ribiški čoln", place:"Staro pristanišče, Molo San Nicola",
+  mission:"Pojdi do starega pristanišča in fotografiraj pisan lesen ribiški čoln.",
+  hint:"Od Piazza del Ferrarese pojdi proti morju mimo gledališča Margherita. Domačini kraju pravijo »N-dèrr'a la lanze«.",
+  map:"Molo San Nicola Bari",
+  q:"Kaj ribiči tukaj tolčejo ob kamen, da se zmehča?", a:["Kruh","Hobotnico","Školjke"], c:1,
+  fact:"Svežo hobotnico tolčejo in vrtijo v vedru morske vode. Barijčani jo nato jedo surovo."},
+ {id:"focaccia", ico:"🍅", title:"Focaccia barese", place:"Pekarna v starem mestu",
+  mission:"Kupi kos prave focaccie barese. Fotografiraj jo, preden jo poješ!",
+  hint:"Znani sta pekarni Panificio Fiore in Panificio Santa Rita. V pekarni reci: »Un pezzo di focaccia, per favore.«",
+  map:"Panificio Fiore Bari",
+  q:"Kaj je na pravi focaccii barese?", a:["Šunka in ananas","Čokolada","Paradižnik in olive"], c:2,
+  fact:"V testo dodajo kuhan krompir, zato je sredica mehka, rob pa hrustljav."},
+ {id:"selfi", ico:"🌊", title:"Zaključni skok", place:"Lungomare, obala", bonus:true,
+  mission:"Zaključna naloga. Vsa ekipa se postavi ob morje pri starih uličnih svetilkah. Fotografirajte se sredi skoka!",
+  hint:"Sprehajališče Lungomare se začne takoj za starim pristaniščem.",
+  map:"Lungomare Nazario Sauro Bari"}
+];
+const AVATARS=["🐙","🦀","🐟","🍋","⭐","🚀","🦁","🍕"];
+const P_PHOTO=10,P_Q1=5,P_Q2=2,P_HINT=2;
+const MAXP=TASKS.reduce((s,t)=>s+P_PHOTO+(t.q?P_Q1:0)+(t.judge||0),0);
+const QS=new URLSearchParams(location.search), BASE=QS.get("srv")||"https://ntfy.sh";
+const HM=location.hash.match(/^#([kp])=([A-Za-z0-9]{8,40})$/);
+const ROLE=HM?(HM[1]==="p"?"parent":"kid"):null, CODE=HM?HM[2]:null;
+const app=document.getElementById("app");
+const te=new TextEncoder(), td=new TextDecoder();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+          set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+window.addEventListener("hashchange",()=>location.reload());
+
+let KEY,TOPIC,LKEY;
+let L={me:null,prog:{}};          // this phone's player (kid role)
+let KIDS={}, J={};                // everything heard on the channel: snapshots per player, parent verdicts
+let ui={open:null,av:0,msg:"",online:false,picking:false,kid:null,st:{},geo:false};
+const VID={}, PH={};              // local video blob URLs; decrypted photos on the parent's phone
+let dirty=false, outbox=[], renderQueued=false;
+
+/* ---------- crypto: everything sent is AES-GCM encrypted with a key derived from the game code ---------- */
+async function sha(s){return new Uint8Array(await crypto.subtle.digest("SHA-256",te.encode(s)))}
+async function encB(bytes){const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},KEY,bytes));
+  const o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return o}
+async function decB(buf){const b=new Uint8Array(buf);
+  return new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM",iv:b.slice(0,12)},KEY,b.slice(12)))}
+const b64=u=>{let s="";for(const x of u)s+=String.fromCharCode(x);return btoa(s)};
+const unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+
+async function send(obj){
+  const body="B1."+b64(await encB(te.encode(JSON.stringify(obj))));
+  const r=await fetch(BASE+"/"+TOPIC,{method:"POST",body});
+  if(!r.ok) throw new Error("send "+r.status);
+}
+async function upload(dataUrl){
+  const bytes=unb64(dataUrl.split(",")[1]);
+  const r=await fetch(BASE+"/"+TOPIC+"f?filename=p.bin",{method:"PUT",body:await encB(bytes)});
+  if(!r.ok) throw new Error("upload "+r.status);
+  const j=await r.json(); if(!j.attachment||!j.attachment.url) throw new Error("no attachment");
+  return j.attachment.url.split("/").pop();
+}
+function loadPhoto(seg){
+  if(PH[seg]) return; PH[seg]="load";
+  fetch(BASE+"/file/"+seg).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(decB)
+    .then(b=>{PH[seg]=URL.createObjectURL(new Blob([b],{type:"image/jpeg"}))})
+    .catch(()=>{PH[seg]="fail"}).then(queueRender);
+}
+function connect(){
+  const es=new EventSource(BASE+"/"+TOPIC+"/sse?since=12h");
+  es.onopen=()=>{ui.online=true;queueRender()};
+  es.onerror=()=>{ui.online=false;queueRender()};
+  es.onmessage=async e=>{
+    try{const d=JSON.parse(e.data);
+      if(d.event!=="message"||!d.message||!d.message.startsWith("B1.")) return;
+      absorb(JSON.parse(td.decode(await decB(unb64(d.message.slice(3))))));
+    }catch(err){}
+  };
+}
+function absorb(o){
+  if(o.t==="s"&&o.id){ if(L.me&&o.id===L.me.id) return; if(!KIDS[o.id]||KIDS[o.id].ts<o.ts){KIDS[o.id]=o;queueRender();} }
+  else if(o.t==="j"&&o.id){const k=o.id+"|"+o.task; if(!J[k]||J[k].ts<o.ts){J[k]=o; if(ROLE==="parent")ls.set(LKEY+":j",J); queueRender();} }
+}
+
+/* ---------- rules ---------- */
+const EMPTY={n:0,u:[],tr:[],h:0,at:0};
+const need=t=>t.photos||1;
+const photoOk=(t,p)=>p.n>=need(t);
+const quizOk=(t,p)=>!t.q||p.tr.includes(t.c);
+const quizOver=(t,p)=>!t.q||p.tr.includes(t.c)||p.tr.length>=2;
+function verdict(id,t,p){ if(!photoOk(t,p)) return "none";
+  const j=J[id+"|"+t.id]; if(!j||j.at!==p.at) return "wait"; return j.ok?"ok":"no"; }
+function stars(id,t,p){const j=J[id+"|"+t.id]; return j&&j.at===p.at&&j.ok?(j.stars||0):0}
+function quizPts(t,p){return t.q&&p.tr.includes(t.c)?(p.tr.length===1?P_Q1:P_Q2):0}
+function pts(id,t,p){let s=quizPts(t,p)-(p.h?P_HINT:0);
+  if(verdict(id,t,p)==="ok") s+=P_PHOTO+(t.judge?stars(id,t,p)*t.judge/5:0); return s}
+function waitPts(id,t,p){return verdict(id,t,p)==="wait"?P_PHOTO:0}
+const taskOf=(k,t)=>(k.p&&k.p[t.id])||EMPTY;
+const total=k=>TASKS.reduce((s,t)=>s+pts(k.id,t,taskOf(k,t)),0);
+const waiting=k=>TASKS.filter(t=>verdict(k.id,t,taskOf(k,t))==="wait").length;
+const doneCount=k=>TASKS.filter(t=>verdict(k.id,t,taskOf(k,t))==="ok"&&quizOver(t,taskOf(k,t))).length;
+
+/* ---------- kid state ---------- */
+function LP(id){return L.prog[id]=L.prog[id]||{photos:[],u:[],tries:[],hint:false,d:null,at:0}}
+function mySnap(){const p={};
+  for(const t of TASKS){const x=L.prog[t.id]; if(!x) continue;
+    p[t.id]={n:x.photos.filter(Boolean).length,u:x.u,tr:x.tries,h:x.hint?1:0,at:x.at}; if(x.d!=null)p[t.id].d=x.d;}
+  return {t:"s",id:L.me.id,name:L.me.name,av:L.me.av,ts:Date.now(),p};}
+function commit(){ if(!ls.set(LKEY,L)){ // storage full: drop stored pictures, keep progress
+    const slim=JSON.parse(JSON.stringify(L)); for(const k in slim.prog) slim.prog[k].photos=slim.prog[k].photos.map(x=>x?1:x);
+    ls.set(LKEY,slim); ui.msg="Pomnilnik telefona je poln. Točke so shranjene, slike pa ostanejo do zaprtja strani.";}
+  if(L.me){KIDS[L.me.id]=mySnap(); dirty=true; flushSoon();} }
+let ft=null; function flushSoon(){clearTimeout(ft);ft=setTimeout(flush,1200)}
+async function flush(){
+  if(ROLE==="kid"&&L.me){
+    for(const t of TASKS){const x=L.prog[t.id]; if(!x||t.video) continue;   // send pictures that have not gone out yet
+      for(let k=0;k<x.photos.length;k++){const src=x.photos[k];
+        if(typeof src==="string"&&!x.u[k]&&(x.tryN=(x.tryN||0)+1)<=4){
+          try{x.u[k]=await upload(src); ls.set(LKEY,L); KIDS[L.me.id]=mySnap(); dirty=true;}catch(e){}}}}
+    if(dirty){ try{await send(mySnap()); dirty=false;}catch(e){} }
+  }
+  while(outbox.length){ try{await send(outbox[0]); outbox.shift();}catch(e){break} }
+  queueRender();
+}
+setInterval(()=>{ if(dirty||outbox.length) flush(); },12000);
+
+function shrink(file){return new Promise((res,rej)=>{
+  const url=URL.createObjectURL(file), img=new Image();
+  img.onload=()=>{const s=Math.min(1,420/img.width), c=document.createElement("canvas");
+    c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
+    res(c.toDataURL("image/jpeg",.6));};
+  img.onerror=()=>{URL.revokeObjectURL(url);rej()}; img.src=url;});}
+function distTo(ll){return new Promise((res,rej)=>{ if(!navigator.geolocation) return rej();
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const R=6371000,r=x=>x*Math.PI/180, a=pos.coords, dLa=r(ll[0]-a.latitude), dLo=r(ll[1]-a.longitude);
+    const h=Math.sin(dLa/2)**2+Math.cos(r(a.latitude))*Math.cos(r(ll[0]))*Math.sin(dLo/2)**2;
+    res(Math.round(2*R*Math.asin(Math.sqrt(h))/10)*10);
+  },rej,{enableHighAccuracy:true,timeout:12000,maximumAge:20000});});}
+
+/* ---------- rendering ---------- */
+function queueRender(){ if(renderQueued) return; renderQueued=true;
+  requestAnimationFrame(()=>{renderQueued=false; if(ui.picking){setTimeout(queueRender,800);return;}
+    if(document.activeElement&&document.activeElement.id==="team-name") return; render();});}
+function render(){ app.innerHTML=!ROLE?lobby():ROLE==="parent"?parentView():kidView(); }
+const net=()=>`<span class="net ${ui.online?"on":""}">${ui.online?"● povezano":"○ brez povezave"}</span>`;
+function link(r,code){return location.origin+location.pathname+location.search+"#"+r+"="+code}
+
+function lobby(){
+  const code=ls.get("bari2:last");
+  if(!code) return `<section class="panel"><h2>Nova igra</h2>
+    <p class="lead">Starš ustvari igro in dobi dve povezavi. Eno pošlje otrokom, drugo obdrži zase.</p>
+    <button class="btn" data-act="new">Ustvari igro</button></section>`+rulesHtml();
+  return `<section class="panel"><h2>Igra je pripravljena</h2>
+    <p><b>1. Povezava za otroke.</b> Pošlji jo na vse štiri telefone.</p>
+    <div class="row"><input type="text" id="lk" readonly value="${esc(link("k",code))}"><button class="btn alt" data-act="copy" data-id="lk">Kopiraj</button></div>
+    <p><b>2. Povezava za starša.</b> Obdrži jo zase. Z njo potrjuješ naloge.</p>
+    <div class="row"><input type="text" id="lp" readonly value="${esc(link("p",code))}"><button class="btn alt" data-act="copy" data-id="lp">Kopiraj</button></div>
+    <a class="btn" style="text-align:center;text-decoration:none" href="${esc(link("p",code))}">Odpri pogled za starša</a>
+    <button class="btn ghost" data-act="new">Ustvari drugo igro</button></section>`+rulesHtml();
+}
+function rulesHtml(){return `<section class="panel"><h2>Pravila</h2><ul class="rules">
+  <li><b>${P_PHOTO} točk</b> za foto dokaz, ko ga starš potrdi.</li>
+  <li><b>${P_Q1} točk</b> za pravilen odgovor v prvem poskusu, <b>${P_Q2}</b> v drugem.</li>
+  <li>Pri treh nalogah starš podeli <b>do 5 zvezdic</b>. Najbolj smešna slika ob sramotilnem stebru šteje dvojno.</li>
+  <li>Namig stane <b>${P_HINT} točki</b>. Zemljevid in razdalja sta brezplačna.</li></ul></section>`}
+
+function rankHtml(){
+  const r=Object.values(KIDS).map(k=>({k,s:total(k),d:doneCount(k),w:waiting(k)})).sort((a,b)=>b.s-a.s||b.d-a.d);
+  if(!r.length) return `<section class="panel"><h2>Lestvica</h2><p class="lead">Tukaj se pojavijo igralci, ko odprejo povezavo in vpišejo ime.</p></section>`;
+  return `<section class="panel"><h2>Lestvica</h2><ol class="rank">${r.map((x,i)=>`<li><span class="pos">${i+1}.</span>
+    <span>${x.k.av} <b>${esc(x.k.name)}</b>${L.me&&x.k.id===L.me.id?" (ti)":""}<small>${x.d} od ${TASKS.length} nalog${x.w?` · ${x.w} čaka potrditev`:""}</small></span>
+    <span class="sc">${x.s}</span></li>`).join("")}</ol></section>`;
+}
+
+function kidView(){
+  if(!L.me) return `<section class="panel"><h2>Kdo si?</h2><p class="lead">Vpiši svoje ime in izberi maskoto.</p>
+    <div class="avatars" role="group" aria-label="Maskota">${AVATARS.map((a,i)=>`<button class="av" data-act="av" data-i="${i}" aria-pressed="${i===ui.av}" aria-label="Maskota ${a}">${a}</button>`).join("")}</div>
+    <form class="row" id="team-form"><input type="text" id="team-name" maxlength="16" placeholder="Tvoje ime" aria-label="Tvoje ime" autocomplete="off">
+    <button class="btn" type="submit">Začni lov</button></form></section>`+rulesHtml();
+  const me=KIDS[L.me.id]||mySnap(), d=doneCount(me), w=waiting(me);
+  let h=`<section class="board" aria-label="Rezultat"><div class="board-top"><b>${L.me.av} ${esc(L.me.name)}</b><span class="pts">${total(me)} <small>/ ${MAXP} točk</small></span></div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${TASKS.length}" aria-valuenow="${d}" aria-label="Potrjene naloge"><i style="width:${d/TASKS.length*100}%"></i></div>
+    <div class="board-top"><small>${w?`${w} ${w===1?"naloga čaka":"nalog čaka"} na starša`:"Vse oddano je pregledano"}</small>${net()}</div></section>`;
+  if(ui.msg) h+=`<p class="hint" role="status">${esc(ui.msg)}</p>`;
+  h+=`<section class="tasks" aria-label="Naloge">`+TASKS.map((t,i)=>kidTask(t,i,me)).join("")+`</section>`+rankHtml();
+  return h;
+}
+function kidTask(t,i,me){
+  const x=L.prog[t.id]||{photos:[],u:[],tries:[],hint:false,d:null}, p=taskOf(me,t), v=verdict(me.id,t,p);
+  const open=ui.open===t.id, max=P_PHOTO+(t.q?P_Q1:0)+(t.judge||0), done=v==="ok"&&quizOver(t,p);
+  let h=`<article class="task${done?" done":""}"><button class="task-head" data-act="open" data-id="${t.id}" aria-expanded="${open}">
+    <span class="num" aria-hidden="true">${t.ico}</span><span class="t"><b>${i+1}. ${esc(t.title)}</b><span>${esc(t.place)}</span></span>
+    <span class="tag ${v}">${v==="wait"?"⏳ ":v==="no"?"↺ ":done?"✓ ":""}${pts(me.id,t,p)} / ${max}</span></button>`;
+  if(!open) return h+`</article>`;
+  h+=`<div class="task-body">${done?`<div class="stamp" aria-hidden="true">BARI<br>NAJDENO<br>★</div>`:""}<p class="mission">${esc(t.mission)}</p>
+    <div class="acts"><a class="btn alt" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.map)}">📍 Zemljevid</a>
+    ${t.ll?`<button class="btn alt" data-act="geo" data-id="${t.id}">🧭 Kako daleč?</button>`:""}
+    ${x.hint?"":`<button class="btn alt" data-act="hint" data-id="${t.id}">💡 Namig (−${P_HINT})</button>`}</div>`;
+  if(ui.geoMsg&&ui.geoMsg.id===t.id) h+=`<p class="hint" role="status">${esc(ui.geoMsg.text)}</p>`;
+  if(x.hint) h+=`<p class="hint"><b>Namig:</b> ${esc(t.hint)}</p>`;
+  h+=`<div class="photos">`;
+  for(let k=0;k<need(t);k++){const src=x.photos[k];
+    h+=`<label class="shot${src?" has":""}">${src&&src!==1?`<img src="${src}" alt="Foto dokaz ${k+1}">`:(src?(t.video?"✓ Video oddan":"✓ Oddano"):(t.video?"🎥 Posnemi ali izberi video":`📷 Fotografiraj${need(t)>1?" "+(k+1):""}`))}
+    <input type="file" accept="${t.video?"video/*":"image/*"}" id="f-${t.id}-${k}" data-id="${t.id}" data-k="${k}" aria-label="Dodaj ${t.video?"video":"fotografijo"} ${k+1}"></label>`;}
+  h+=`</div>`;
+  if(t.video&&VID[t.id]) h+=`<video class="clip" controls playsinline src="${VID[t.id]}"></video>`;
+  if(t.video&&x.photos[0]) h+=`<p class="lead">Video ostane na tvojem telefonu. Pokaži ga staršu, da ga potrdi.</p>`;
+  if(v==="wait") h+=`<p class="status wait">⏳ Oddano. Čaka na potrditev starša (+${P_PHOTO} točk).</p>`;
+  if(v==="no") h+=`<p class="status no">↺ Starš tega ni potrdil. Poskusi še enkrat z novo sliko.</p>`;
+  if(v==="ok") h+=`<p class="status ok">✓ Potrjeno!${t.judge?` Starš ti je dal ${stars(me.id,t,p)} od 5 zvezdic.`:""}</p>`;
+  if(t.q){const over=quizOver(t,p);
+    h+=`<div class="quiz"><p>${esc(t.q)}</p>${t.a.map((a,j)=>{const tried=p.tr.includes(j), cls=(over&&j===t.c)?" ok":(tried?" no":"");
+      return `<button class="opt${cls}" data-act="ans" data-id="${t.id}" data-j="${j}" ${over||tried?"disabled":""}>${esc(a)}</button>`}).join("")}
+    ${over?`<p class="fact"><b>${quizOk(t,p)?"Pravilno!":"Tokrat ne."}</b> ${esc(t.fact)}</p>`:(p.tr.length?`<p class="lead">Ni pravilno. Imaš še en poskus za ${P_Q2} točki.</p>`:"")}</div>`;}
+  return h+`</div></article>`;
+}
+
+function parentView(){
+  const kids=Object.values(KIDS);
+  let h=`<section class="board"><div class="board-top"><b>Pogled za starša</b>${net()}</div>
+    <div class="board-top"><small>${kids.length} ${kids.length===1?"igralec":"igralcev"} v igri</small><a class="chip" style="text-decoration:none" href="${esc(link("k",CODE))}" data-act="copylink">Kopiraj povezavo za otroke</a></div></section>`;
+  if(ui.msg) h+=`<p class="hint" role="status">${esc(ui.msg)}</p>`;
+  const q=[]; for(const k of kids) for(const t of TASKS) if(verdict(k.id,t,taskOf(k,t))==="wait") q.push([k,t]);
+  q.sort((a,b)=>taskOf(a[0],a[1]).at-taskOf(b[0],b[1]).at);
+  h+=`<section class="panel"><h2>Čaka na potrditev${q.length?` (${q.length})`:""}</h2>${q.length?q.map(([k,t])=>subCard(k,t)).join(""):`<p class="lead">Trenutno ni ničesar. Nove oddaje se pojavijo tukaj same.</p>`}</section>`;
+  h+=rankHtml();
+  if(kids.length){
+    h+=`<section class="panel"><h2>Napredek po igralcih</h2><div class="chips dark">${kids.map(k=>`<button class="chip" data-act="kid" data-id="${k.id}" aria-pressed="${ui.kid===k.id}">${k.av} ${esc(k.name)}</button>`).join("")}</div>`;
+    for(const k of kids){
+      h+=`<div class="grid" aria-label="Napredek ${esc(k.name)}"><span class="gname">${k.av}</span>${TASKS.map((t,i)=>{const p=taskOf(k,t), v=verdict(k.id,t,p);
+        return `<span class="cell ${v}" title="${esc(t.title)}">${i+1}</span>`}).join("")}</div>`;}
+    h+=`<p class="lead legend"><span class="cell ok">1</span> potrjeno <span class="cell wait">1</span> čaka <span class="cell no">1</span> zavrnjeno <span class="cell none">1</span> še ni</p>`;
+    const k=KIDS[ui.kid];
+    if(k){const subs=TASKS.filter(t=>{const p=taskOf(k,t);return p.n||p.tr.length});
+      h+=`<h3>${k.av} ${esc(k.name)}: ${total(k)} točk</h3>${subs.length?subs.map(t=>subCard(k,t)).join(""):`<p class="lead">Še nobene oddaje.</p>`}`;}
+    h+=`</section>`;
+  }
+  return h;
+}
+function subCard(k,t){
+  const p=taskOf(k,t), v=verdict(k.id,t,p), key=k.id+"|"+t.id, j=J[key];
+  const st=ui.st[key]!=null?ui.st[key]:(j&&j.at===p.at?(j.stars||0):0);
+  let h=`<div class="sub ${v}"><p class="subh"><b>${k.av} ${esc(k.name)}</b> · ${t.ico} ${esc(t.title)}<span class="tag ${v}">${{ok:"potrjeno",no:"zavrnjeno",wait:"čaka",none:"brez slike"}[v]}</span></p>`;
+  if(t.video){ if(p.n) h+=`<p class="lead">🎥 Video je na telefonu otroka. Oglej si ga tam in nato potrdi.</p>`; }
+  else if(p.n){ h+=`<div class="photos">`;
+    for(let i=0;i<p.n;i++){const seg=p.u[i]; if(seg) loadPhoto(seg); const s=seg?PH[seg]:null;
+      h+=`<div class="shot has static">${s&&s!=="load"&&s!=="fail"?`<img src="${s}" alt="Oddana slika ${i+1}">`:s==="load"?"Nalagam sliko…":s==="fail"?"Slika je potekla. Poglej jo na telefonu otroka.":"Slika še ni prispela. Poglej jo na telefonu otroka."}</div>`;}
+    h+=`</div>`; }
+  if(p.d!=null) h+=`<p class="lead">🧭 Oddano približno ${p.d} m od cilja.</p>`;
+  if(t.q) h+=`<p class="lead">Kviz: ${p.tr.includes(t.c)?`pravilno v ${p.tr.length}. poskusu`:p.tr.length>=2?"napačno":"še brez odgovora"}${p.h?" · uporabljen namig":""}</p>`;
+  if(p.n>=need(t)){
+    if(t.judge) h+=`<div class="judge"><p>Ocena <span>${st*t.judge/5} / ${t.judge} točk</span></p><div class="stars" role="group" aria-label="Ocena">${[1,2,3,4,5].map(n=>`<button class="star${n<=st?" on":""}" data-act="star" data-key="${key}" data-n="${n}" aria-label="${n} od 5 zvezdic" aria-pressed="${n===st}">★</button>`).join("")}</div></div>`;
+    h+=`<div class="row"><button class="btn ok" data-act="judge" data-key="${key}" data-ok="1">✓ ${v==="ok"?"Shrani oceno":"Potrdi"}</button>
+      ${v==="no"?"":`<button class="btn ghost" data-act="judge" data-key="${key}" data-ok="0">✗ Zavrni</button>`}</div>`;
+  } else if(p.n) h+=`<p class="lead">Oddanih ${p.n} od ${need(t)} slik.</p>`;
+  return h+`</div>`;
+}
+
+/* ---------- events ---------- */
+function copy(text,el){ const ok=()=>{ui.msg="Povezava je kopirana.";render()};
+  if(navigator.clipboard) navigator.clipboard.writeText(text).then(ok).catch(()=>{if(el){el.focus();el.select();}});
+  else if(el){el.focus();el.select();} }
+app.addEventListener("click",e=>{
+  if(e.target.type==="file"){ui.picking=true;return;}
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const a=b.dataset.act, id=b.dataset.id;
+  if(a==="new"){const A="abcdefghijkmnpqrstuvwxyz23456789"; let c=""; for(const x of crypto.getRandomValues(new Uint8Array(16))) c+=A[x%A.length]; ls.set("bari2:last",c);}
+  else if(a==="copy"){const el=document.getElementById(id); copy(el.value,el); return;}
+  else if(a==="copylink"){e.preventDefault(); copy(b.href); return;}
+  else if(a==="open") ui.open=ui.open===id?null:id;
+  else if(a==="av"){const v=(document.getElementById("team-name")||{}).value||""; ui.av=+b.dataset.i; render(); const n=document.getElementById("team-name"); if(n)n.value=v; return;}
+  else if(a==="hint"){LP(id).hint=true;commit();}
+  else if(a==="ans"){const t=TASKS.find(x=>x.id===id), x=LP(id), j=+b.dataset.j, p={tr:x.tries};
+    if(!quizOver(t,p)&&!x.tries.includes(j)){x.tries.push(j);commit();}}
+  else if(a==="geo"){const t=TASKS.find(x=>x.id===id); ui.geoMsg={id,text:"Iščem tvojo lokacijo…"}; render();
+    distTo(t.ll).then(d=>{ui.geo=true; ui.geoMsg={id,text:d<=60?"Tukaj si! Cilj je čisto blizu.":`Do cilja je še približno ${d} m.`};})
+      .catch(()=>{ui.geoMsg={id,text:"Lokacije ni bilo mogoče dobiti. Dovoli dostop do lokacije ali uporabi zemljevid."};}).then(render); return;}
+  else if(a==="kid") ui.kid=ui.kid===id?null:id;
+  else if(a==="star"){const k=b.dataset.key, n=+b.dataset.n, cur=ui.st[k]; ui.st[k]=cur===n?0:n;}
+  else if(a==="judge"){const key=b.dataset.key, [kid,task]=key.split("|"), k=KIDS[kid], t=TASKS.find(x=>x.id===task); if(!k) return;
+    const p=taskOf(k,t), old=J[key], ok=+b.dataset.ok;
+    const o={t:"j",id:kid,task,ok,stars:ok&&t.judge?(ui.st[key]!=null?ui.st[key]:(old&&old.at===p.at?old.stars||0:0)):0,at:p.at,ts:Date.now()};
+    J[key]=o; delete ui.st[key]; ls.set(LKEY+":j",J); outbox.push(o); flush();}
+  render();
+});
+app.addEventListener("submit",e=>{ e.preventDefault();
+  const name=(document.getElementById("team-name").value||"").trim(); if(!name){ui.msg="";document.getElementById("team-name").focus();return;}
+  L.me={id:"k"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,av:AVATARS[ui.av]};
+  ui.open=TASKS[0].id; commit(); render(); });
+app.addEventListener("change",async e=>{
+  const inp=e.target; if(inp.type!=="file") return; ui.picking=false;
+  if(!inp.files[0]||!L.me) return;
+  const id=inp.dataset.id, k=+inp.dataset.k, t=TASKS.find(x=>x.id===id), x=LP(id);
+  let src=1;
+  if(inp.files[0].type.startsWith("video")){ try{VID[id]=URL.createObjectURL(inp.files[0]);}catch(err){} }
+  else { try{src=await shrink(inp.files[0]);}catch(err){} }
+  x.photos[k]=src; x.u[k]=null; x.tryN=0; x.at=Date.now(); commit(); render(); flush();
+  if(t.ll&&ui.geo) distTo(t.ll).then(d=>{x.d=d;commit();}).catch(()=>{});
+});
+window.addEventListener("focus",()=>setTimeout(()=>{ui.picking=false},1500));
+
+(async function init(){
+  if(!ROLE){render();return;}
+  if(!window.crypto||!crypto.subtle){app.innerHTML=`<p class="hint">Ta brskalnik ne podpira varne povezave. Odpri stran v Chromu ali Safariju.</p>`;return;}
+  KEY=await crypto.subtle.importKey("raw",await sha("bari-key|"+CODE),"AES-GCM",false,["encrypt","decrypt"]);
+  TOPIC="bari"+[...(await sha("bari-topic|"+CODE))].slice(0,12).map(b=>b.toString(16).padStart(2,"0")).join("");
+  LKEY="bari2:"+TOPIC;
+  if(ROLE==="kid"){ const s=ls.get(LKEY); if(s&&s.prog) L=s; if(L.me){KIDS[L.me.id]=mySnap(); dirty=true;} }
+  else { J=ls.get(LKEY+":j")||{}; ls.set("bari2:last",CODE); }
+  render(); connect(); flushSoon();
+})();
+
+</script>
+</body>
+</html>
